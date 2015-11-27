@@ -1,0 +1,13 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>herms-cqrs</id>
+    <version>$version$</version>
+    <authors>Herman Crawfurd Svensen</authors>
+    <owners>Herman Crawfurd Svensen</owners>
+    <description>A small CQRS framework in its very very early stages.</description>
+  </metadata>
+  <files>
+    <file src="bin\Release\*.dll" target="lib\net40" />
+  </files>
+</package>

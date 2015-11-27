@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>herms-cqrs-ninject</id>
+    <id>Herms.Cqrs.Ninject</id>
     <version>$version$</version>
     <authors>Herman Crawfurd Svensen</authors>
     <owners>Herman Crawfurd Svensen</owners>
     <description>A small CQRS framework in its very very early stages.</description>
     <dependencies>
-      <dependency id="herms-cqrs" version="[1.0,2.0]" />
+      <dependency id="Herms.Cqrs" version="[1.0,2.0]" />
       <dependency id="ninject" version="[3.2,)" />
     </dependencies>
   </metadata>

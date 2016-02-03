@@ -8,7 +8,7 @@ namespace Herms.Cqrs
     {
         public Guid Id { get; set; }
         protected List<IEvent> Changes { get; set; }
-        protected int Version { get; set; }
+        public int Version { get; protected set; }
 
         protected Aggregate()
         {

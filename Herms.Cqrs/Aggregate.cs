@@ -19,6 +19,14 @@ namespace Herms.Cqrs
         {
             return Changes;
         }
+
+        protected void TagVersionedEvent(VersionedEvent versionedEvent)
+        {
+            versionedEvent.AggregateId = Id;
+            versionedEvent.Version = ++Version;
+            versionedEvent.Id = Guid.NewGuid();
+            versionedEvent.Timestamp = DateTime.UtcNow;
+        }
     }
 
     public interface IAggregate

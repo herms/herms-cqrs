@@ -6,8 +6,8 @@ namespace Herms.Cqrs
 {
     public abstract class Aggregate
     {
-        public Guid Id { get; set; }
-        protected List<IEvent> Changes { get; set; }
+        public Guid Id { get; protected set; }
+        protected List<IEvent> Changes { get; }
         public int Version { get; protected set; }
 
         protected Aggregate()

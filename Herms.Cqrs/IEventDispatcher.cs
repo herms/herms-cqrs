@@ -3,7 +3,7 @@ using Herms.Cqrs.Event;
 
 namespace Herms.Cqrs
 {
-    public interface IEventBus
+    public interface IEventDispatcher
     {
         void Publish(IEvent @event);
     }

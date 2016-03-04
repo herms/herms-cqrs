@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregate.cs" />
-    <Compile Include="IEventBus.cs" />
+    <Compile Include="IEventDispatcher.cs" />
     <Compile Include="IEventHandlerRegistry.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Envelope.cs" />

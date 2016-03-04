@@ -2,6 +2,7 @@
 
 namespace Herms.Cqrs.Event
 {
+    [Serializable]
     public class VersionedEvent : IEvent
     {
         public Guid Id { get; set; }

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Linq;
-using Herms.Cqrs.Event;
+using Herms.Cqrs.Ninject.Tests.EventHandlers;
+using Herms.Cqrs.Ninject.Tests.Events;
 using Ninject;
 using Xunit;
 
 namespace Herms.Cqrs.Ninject.Tests
 {
     public class EventHandlerRegistryTests
-
     {
         [Fact]
-        public void
-            GivenEventHandlersInRegistry_WhenRequestingHandlersForAnEventType_ThenTheCorrespondingHandlersShouldBeReturned
-            ()
+        public void GivenEventHandlersInRegistry_WhenRequestingHandlersForAnEventType_ThenTheCorrespondingHandlersShouldBeReturned()
         {
             var kernel = new StandardKernel();
             var eventHandlerRegistry = new NinjectEventHandlerRegistry(kernel);
@@ -36,36 +34,4 @@ namespace Herms.Cqrs.Ninject.Tests
             Assert.Equal(1, bindingsForEvent3.Count);
         }
     }
-
-    public class TestEventHandler1 : IEventHandler<TestEvent1>, IEventHandler<TestEvent2>
-    {
-        public void Handle(TestEvent1 @event)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Handle(TestEvent2 @event)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class TestEventHandler2 : IEventHandler<TestEvent2>, IEventHandler<TestEvent3>
-    {
-        public void Handle(TestEvent2 @event)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Handle(TestEvent3 @event)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class TestEvent3 : VersionedEvent {}
-
-    public class TestEvent2 : VersionedEvent {}
-
-    public class TestEvent1 : VersionedEvent {}
 }

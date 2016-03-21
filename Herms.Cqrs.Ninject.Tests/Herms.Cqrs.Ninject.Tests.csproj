@@ -61,7 +61,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandHandlerScannerTest.cs" />
+    <Compile Include="CommandHandlers\TestCommandHandler1.cs" />
+    <Compile Include="CommandHandlers\TestCommandHandler2.cs" />
+    <Compile Include="Commands\TestCommand1.cs" />
+    <Compile Include="Commands\TestCommand2.cs" />
+    <Compile Include="Commands\TestCommand3.cs" />
     <Compile Include="EventHandlerRegistryTests.cs" />
+    <Compile Include="EventHandlers\TestEventHandler1.cs" />
+    <Compile Include="EventHandlers\TestEventHandler2.cs" />
+    <Compile Include="Events\TestEvent1.cs" />
+    <Compile Include="Events\TestEvent2.cs" />
+    <Compile Include="Events\TestEvent3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +86,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

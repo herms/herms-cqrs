@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Logging;
 using Herms.Cqrs.Event;
 using Ninject;
 
@@ -9,10 +10,12 @@ namespace Herms.Cqrs.Ninject
     public class NinjectEventHandlerRegistry : IEventHandlerRegistry
     {
         private readonly IKernel _kernel;
+        private readonly ILog _log;
 
         public NinjectEventHandlerRegistry(IKernel kernel)
         {
             _kernel = kernel;
+            _log = LogManager.GetLogger(GetType());
         }
 
         public IEnumerable<IEventHandler<T>> ResolveHandlers<T>(T eventType) where T : IEvent
@@ -32,15 +35,18 @@ namespace Herms.Cqrs.Ninject
                 if (typeof (IEvent).IsAssignableFrom(typeArgument))
                 {
                     var eventType = typeArgument;
-                    Console.WriteLine($"Handling for event {typeArgument.Name} found in type {handler.Name}.");
-                    _kernel.Bind(eventHandler).To(handler).Named(CreateEventHandlerName(handler, eventType));
+                    _log.Debug($"Handling for event {typeArgument.Name} found in type {handler.Name}.");
+                    _kernel.Bind(eventHandler).To(handler).Named(CreateEventHandlerName(_log, handler, eventType));
                 }
             }
         }
 
-        private static string CreateEventHandlerName(Type handler, Type eventType)
+        private static string CreateEventHandlerName(ILog log, Type handler, Type eventType)
         {
-            return $"{handler.Name}_{eventType.Name}";
+            var eventHandlerName = $"{handler.Name}_{eventType.Name}";
+            if(log.IsTraceEnabled)
+                log.Trace($"Handler name for type {handler.Name} handling event {eventType.Name}: {eventHandlerName}.");
+            return eventHandlerName;
         }
     }
 }

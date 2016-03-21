@@ -12,11 +12,9 @@ namespace Herms.Cqrs.Ninject.Tests
         public void GivenEventHandlersInAssembly_WhenScanning_ThenHandlersShouldBeRegistered()
         {
             var kernel = new StandardKernel();
-            var scanner = new EventHandlerScanner(kernel);
-
-            scanner.ScanAndRegisterEventHandlers(GetType().Assembly);
 
             var eventHandlerRegistry = new NinjectEventHandlerRegistry(kernel);
+            eventHandlerRegistry.ScanAssembly(GetType().Assembly);
 
             var handlersForTestEvent1 = eventHandlerRegistry.ResolveHandlers(new TestEvent1());
             var handlersForTestEvent2 = eventHandlerRegistry.ResolveHandlers(new TestEvent2());

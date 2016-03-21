@@ -12,11 +12,9 @@ namespace Herms.Cqrs.Ninject.Tests
         public void GivenCommandHandlersInAssembly_WhenScanning_ThenHandlersShouldBeRegistered()
         {
             var kernel = new StandardKernel();
-            var scanner = new CommandHandlerScanner(kernel);
-
-            scanner.ScanAndRegisterCommandHandlers(GetType().Assembly);
 
             var commandHandlerRegistry = new NinjectCommandHandlerRegistry(kernel);
+            commandHandlerRegistry.ScanAssembly(GetType().Assembly);
 
             var handlerForTestCommand1 = commandHandlerRegistry.ResolveHandler(new TestCommand1());
             var handlerForTestCommand2 = commandHandlerRegistry.ResolveHandler(new TestCommand2());

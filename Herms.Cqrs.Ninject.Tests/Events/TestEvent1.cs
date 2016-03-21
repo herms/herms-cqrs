@@ -1,6 +1,7 @@
+using System;
 using Herms.Cqrs.Event;
 
 namespace Herms.Cqrs.Ninject.Tests.Events
 {
-    public class TestEvent1 : VersionedEvent {}
+    public class TestEvent1 : VersionedEvent, IEvent {}
 }

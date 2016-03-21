@@ -24,7 +24,7 @@ namespace Herms.Cqrs
         {
             versionedEvent.AggregateId = Id;
             versionedEvent.Version = ++Version;
-            versionedEvent.Id = Guid.NewGuid();
+            versionedEvent.EventId = Guid.NewGuid();
             versionedEvent.Timestamp = DateTime.UtcNow;
         }
     }

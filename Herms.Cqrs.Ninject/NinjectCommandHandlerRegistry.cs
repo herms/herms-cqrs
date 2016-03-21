@@ -14,7 +14,7 @@ namespace Herms.Cqrs.Ninject
 
         public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : Command
         {
-            return (ICommandHandler<T>) _kernel.GetService(typeof (ICommandHandler<T>));
+            return (ICommandHandler<T>) _kernel.Get(typeof (ICommandHandler<T>));
         }
     }
 }

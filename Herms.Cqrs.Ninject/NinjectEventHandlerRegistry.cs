@@ -16,7 +16,7 @@ namespace Herms.Cqrs.Ninject
 
         public IEnumerable<IEventHandler<T>> ResolveHandlers<T>(T eventType) where T : IEvent
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

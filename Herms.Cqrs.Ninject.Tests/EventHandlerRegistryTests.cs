@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Herms.Cqrs.Event;
 using Herms.Cqrs.Ninject.Tests.EventHandlers;
 using Herms.Cqrs.Ninject.Tests.Events;
 using Ninject;
@@ -18,9 +19,9 @@ namespace Herms.Cqrs.Ninject.Tests
             eventHandlerRegistry.RegisterHandler(typeof (TestEventHandler1));
             eventHandlerRegistry.RegisterHandler(typeof (TestEventHandler2));
 
-            var bindingsForEvent1 = eventHandlerRegistry.ResolveHandlers(new TestEvent1()).ToList();
-            var bindingsForEvent2 = eventHandlerRegistry.ResolveHandlers(new TestEvent2()).ToList();
-            var bindingsForEvent3 = eventHandlerRegistry.ResolveHandlers(new TestEvent3()).ToList();
+            var bindingsForEvent1 = eventHandlerRegistry.ResolveHandlers((IEvent)new TestEvent1()).ToList();
+            var bindingsForEvent2 = eventHandlerRegistry.ResolveHandlers((IEvent)new TestEvent2()).ToList();
+            var bindingsForEvent3 = eventHandlerRegistry.ResolveHandlers((IEvent)new TestEvent3()).ToList();
 
             Console.WriteLine($"Bindings for {nameof(TestEvent1)}");
             bindingsForEvent1.ForEach(b => Console.WriteLine(" - " + b.GetType().Name));

@@ -44,7 +44,6 @@
     <Compile Include="IEventDispatcher.cs" />
     <Compile Include="IEventHandlerRegistry.cs" />
     <Compile Include="Command.cs" />
-    <Compile Include="Envelope.cs" />
     <Compile Include="Event\Exceptions\EventVersionLowerThanCurrentException.cs" />
     <Compile Include="Event\IApplyEvent.cs" />
     <Compile Include="Event\IEvent.cs" />

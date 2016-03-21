@@ -68,6 +68,7 @@
     <Compile Include="Commands\TestCommand2.cs" />
     <Compile Include="Commands\TestCommand3.cs" />
     <Compile Include="EventHandlerRegistryTests.cs" />
+    <Compile Include="EventHandlerScannerTest.cs" />
     <Compile Include="EventHandlers\TestEventHandler1.cs" />
     <Compile Include="EventHandlers\TestEventHandler2.cs" />
     <Compile Include="Events\TestEvent1.cs" />

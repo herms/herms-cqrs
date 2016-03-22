@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Herms.Cqrs.Event;
 
-namespace Herms.Cqrs.Ninject.Tests.Events
+namespace Herms.Cqrs.TestContext.Events
 {
-    public class TestEvent2 : VersionedEvent, IEvent, IEvent<TestEvent2>
+    public class TestEvent1 : VersionedEvent, IEvent, IEvent<TestEvent1>
     {
         public EventHandlerResults Handle(IEventHandlerRegistry registry)
         {
@@ -18,7 +18,7 @@ namespace Herms.Cqrs.Ninject.Tests.Events
             return results;
         }
 
-        public IEnumerable<IEventHandler<TestEvent2>> GetHandlers(IEventHandlerRegistry registry)
+        public IEnumerable<IEventHandler<TestEvent1>> GetHandlers(IEventHandlerRegistry registry)
         {
             var handlers = registry.ResolveHandlers(this);
             return handlers;

@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{72897239-60C2-4984-B329-7EBA2F5EE773}</ProjectGuid>
+    <ProjectGuid>{9B78081C-D0CC-4D17-9287-EFEAA6E12D26}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Herms.Cqrs.Ninject</RootNamespace>
-    <AssemblyName>Herms.Cqrs.Ninject</AssemblyName>
+    <RootNamespace>Herms.Cqrs.TestContext</RootNamespace>
+    <AssemblyName>Herms.Cqrs.TestContext</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,17 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+    <Reference Include="Common.Logging">
       <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
-      <Private>True</Private>
     </Reference>
-    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+    <Reference Include="Common.Logging.Core">
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,9 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NinjectAssemblyScanner.cs" />
-    <Compile Include="NinjectCommandHandlerRegistry.cs" />
-    <Compile Include="NinjectEventHandlerRegistry.cs" />
+    <Compile Include="CommandHandlers\TestCommandHandler1.cs" />
+    <Compile Include="CommandHandlers\TestCommandHandler2.cs" />
+    <Compile Include="Commands\TestCommand1.cs" />
+    <Compile Include="Commands\TestCommand2.cs" />
+    <Compile Include="Commands\TestCommand3.cs" />
+    <Compile Include="EventHandlers\TestEventHandler1.cs" />
+    <Compile Include="EventHandlers\TestEventHandler2.cs" />
+    <Compile Include="Events\TestEvent1.cs" />
+    <Compile Include="Events\TestEvent2.cs" />
+    <Compile Include="Events\TestEvent3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -62,10 +64,6 @@
       <Project>{85C2484C-C0E1-4D65-868C-F7753F90A01D}</Project>
       <Name>Herms.Cqrs</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Herms.Cqrs.Ninject.nuspec" />
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

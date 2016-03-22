@@ -1,7 +1,7 @@
 ﻿using System;
 using Herms.Cqrs.Event;
-using Herms.Cqrs.Ninject.Tests.EventHandlers;
-using Herms.Cqrs.Ninject.Tests.Events;
+using Herms.Cqrs.TestContext.EventHandlers;
+using Herms.Cqrs.TestContext.Events;
 using Ninject;
 using Xunit;
 
@@ -15,8 +15,8 @@ namespace Herms.Cqrs.Ninject.Tests
             var kernel = new StandardKernel();
             var eventHandlerRegistry = new NinjectEventHandlerRegistry(kernel);
 
-            eventHandlerRegistry.RegisterHandler(typeof (TestEventHandler1));
-            eventHandlerRegistry.RegisterHandler(typeof (TestEventHandler2));
+            eventHandlerRegistry.RegisterImplementation(typeof (TestEventHandler1));
+            eventHandlerRegistry.RegisterImplementation(typeof (TestEventHandler2));
 
             var event1 = (IEvent) new TestEvent1();
             var result1 = event1.Handle(eventHandlerRegistry);

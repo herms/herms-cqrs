@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Common.Logging;
 using Herms.Cqrs.Event;
 using Ninject;
 
 namespace Herms.Cqrs.Ninject
 {
-    public class NinjectEventHandlerRegistry : IEventHandlerRegistry, IAssemblyScanner
+    public class NinjectEventHandlerRegistry : IEventHandlerRegistry
     {
         private const string EventHandlerPrefix = "EventHandler";
         private readonly IKernel _kernel;
@@ -20,55 +19,29 @@ namespace Herms.Cqrs.Ninject
             _log = LogManager.GetLogger(GetType());
         }
 
-        public void ScanAssembly(Assembly assembly)
+        public void Register(Type eventHandler, Type implementationType)
         {
-            _log.Info($"Scanning assembly {assembly.FullName} for event handlers.");
-            var handlersFoundInAssembly = 0;
-            var typesWithHandlers = 0;
-
-            foreach (var assemblyType in assembly.GetTypes())
+            if (!eventHandler.IsAssignableFrom(implementationType))
             {
-                var handlersFoundInType = 0;
-                _log.Trace($"Scanning type {assemblyType.FullName} for event handlers.");
-
-                var eventHandlers =
-                    assemblyType.GetInterfaces()
-                        .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEventHandler<>));
-                var eventHandlerList = eventHandlers as IList<Type> ?? eventHandlers.ToList();
-                if (eventHandlerList.Any())
-                {
-                    if (assemblyType.IsPublic)
-                    {
-                        foreach (var eventHandler in eventHandlerList)
-                        {
-                            handlersFoundInType++;
-                            var typeArgument = eventHandler.GetGenericArguments()[0];
-                            if (typeof (IEvent).IsAssignableFrom(typeArgument))
-                            {
-                                var eventType = typeArgument;
-                                _log.Debug(
-                                    $"Handling for event {typeArgument.Name} found in type {assemblyType.Name}.");
-                                _kernel.Bind(eventHandler)
-                                    .To(assemblyType)
-                                    .Named(CreateEventHandlerName(assemblyType, eventType));
-                            }
-                            else
-                            {
-                                _log.Warn($"{assemblyType.Name} contains an event handler which does not comply with signature.");
-                            }
-                        }
-                        handlersFoundInAssembly += handlersFoundInType;
-                        if (handlersFoundInType > 0)
-                            typesWithHandlers++;
-                    }
-                    else
-                    {
-                        _log.Warn($"{assemblyType.Name} contains command handlers, but not marked public.");
-                    }
-                }
+                var errorMsg = $"{eventHandler} is not assignable from {implementationType}.";
+                _log.Error(errorMsg);
+                throw new ArgumentException(errorMsg);
             }
-            _log.Info(
-                $"{handlersFoundInAssembly} command handlers registered from {typesWithHandlers} types in assembly {assembly.FullName}.");
+
+            var typeArgument = eventHandler.GetGenericArguments()[0];
+            if (typeof (IEvent).IsAssignableFrom(typeArgument))
+            {
+                var eventType = typeArgument;
+                _log.Debug(
+                    $"Handling for event {typeArgument.Name} found in type {implementationType.Name}.");
+                _kernel.Bind(eventHandler)
+                    .To(implementationType)
+                    .Named(CreateEventHandlerName(implementationType, eventType));
+            }
+            else
+            {
+                _log.Warn($"{implementationType.Name} contains an event handler which does not comply with signature.");
+            }
         }
 
         public IEnumerable<IEventHandler<T>> ResolveHandlers<T>(T eventType) where T : IEvent
@@ -77,20 +50,14 @@ namespace Herms.Cqrs.Ninject
             return bindings.Select(binding => _kernel.Get<IEventHandler<T>>(binding.BindingConfiguration.Metadata.Name));
         }
 
-        public void RegisterHandler(Type handler)
+        public void RegisterImplementation(Type handler)
         {
             var handlers =
                 handler.GetInterfaces()
                     .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEventHandler<>));
             foreach (var eventHandler in handlers)
             {
-                var typeArgument = eventHandler.GetGenericArguments()[0];
-                if (typeof (IEvent).IsAssignableFrom(typeArgument))
-                {
-                    var eventType = typeArgument;
-                    _log.Debug($"Handling for event {typeArgument.Name} found in type {handler.Name}.");
-                    _kernel.Bind(eventHandler).To(handler).Named(CreateEventHandlerName(_log, handler, eventType));
-                }
+                Register(eventHandler, handler);
             }
         }
 

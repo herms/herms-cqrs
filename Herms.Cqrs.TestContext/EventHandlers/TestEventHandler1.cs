@@ -1,12 +1,12 @@
 ﻿using System;
 using Common.Logging;
-using Herms.Cqrs.Ninject.Tests.Events;
+using Herms.Cqrs.TestContext.Events;
 
-namespace Herms.Cqrs.Ninject.Tests.EventHandlers
+namespace Herms.Cqrs.TestContext.EventHandlers
 {
     public class TestEventHandler1 : IEventHandler<TestEvent1>, IEventHandler<TestEvent2>
     {
-        private ILog _log;
+        private readonly ILog _log;
 
         public TestEventHandler1()
         {

@@ -43,6 +43,7 @@
     <Compile Include="Aggregate.cs" />
     <Compile Include="EventHandlerResult.cs" />
     <Compile Include="EventHandlerResults.cs" />
+    <Compile Include="IAssemblyScanner.cs" />
     <Compile Include="IEventDispatcher.cs" />
     <Compile Include="IEventHandlerRegistry.cs" />
     <Compile Include="Command.cs" />

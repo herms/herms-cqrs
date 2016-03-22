@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Herms.Cqrs.Ninject.Tests")]
+[assembly: AssemblyTitle("Herms.Cqrs.TestContext")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Herms.Cqrs.Ninject.Tests")]
+[assembly: AssemblyProduct("Herms.Cqrs.TestContext")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
-[assembly: Guid("e1fef53c-f8ae-4608-ab3a-80ebc78fbd41")]
+[assembly: Guid("9b78081c-d0cc-4d17-9287-efeaa6e12d26")]
 
 // Version information for an assembly consists of the following four values:
 //

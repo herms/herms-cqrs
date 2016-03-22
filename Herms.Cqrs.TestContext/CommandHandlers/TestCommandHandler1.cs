@@ -1,8 +1,8 @@
 ﻿using System;
 using Common.Logging;
-using Herms.Cqrs.Ninject.Tests.Commands;
+using Herms.Cqrs.TestContext.Commands;
 
-namespace Herms.Cqrs.Ninject.Tests.CommandHandlers
+namespace Herms.Cqrs.TestContext.CommandHandlers
 {
     public class TestCommandHandler1 : ICommandHandler<TestCommand1>
     {

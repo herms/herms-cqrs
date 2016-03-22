@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Common.Logging;
 using Ninject;
 
 namespace Herms.Cqrs.Ninject
 {
-    public class NinjectCommandHandlerRegistry : ICommandHandlerRegistry, IAssemblyScanner
+    public class NinjectCommandHandlerRegistry : ICommandHandlerRegistry
     {
         private readonly IKernel _kernel;
         private readonly ILog _logger;
@@ -18,64 +16,49 @@ namespace Herms.Cqrs.Ninject
             _kernel = kernel;
         }
 
-        public void ScanAssembly(Assembly assembly)
+        public void Register(Type handlerType, Type implementationType)
         {
-            _logger.Info($"Scanning assembly {assembly.FullName} for command handlers.");
-            var handlersFoundInAssembly = 0;
-            var typesWithHandlers = 0;
-            foreach (var assemblyType in assembly.GetTypes())
+            if (!handlerType.IsGenericType && handlerType.GetGenericTypeDefinition() == typeof (ICommandHandler<>))
             {
-                var handlersFoundInType = 0;
-                _logger.Trace($"Scanning type {assemblyType.FullName} for command handlers.");
-                var commandHandlers =
-                    assemblyType.GetInterfaces()
-                        .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (ICommandHandler<>));
-                var commandHandlerList = commandHandlers as IList<Type> ?? commandHandlers.ToList();
-                if (commandHandlerList.Any())
-                {
-                    if (assemblyType.IsPublic)
-                    {
-                        foreach (var commandHandler in commandHandlerList)
-                        {
-                            handlersFoundInType++;
-                            var typeArgument = commandHandler.GetGenericArguments()[0];
-                            if (typeof (Command).IsAssignableFrom(typeArgument))
-                            {
-                                var commandType = typeArgument;
-                                _logger.Debug(
-                                    $"Handling for command {typeArgument.Name} found in type {assemblyType.Name}.");
-                                if (_kernel.TryGet(commandHandler) != null)
-                                    _logger.Warn(
-                                        $"A command handler for command {typeArgument.Name} is already registered. Ignoring subsequent registrations.");
-                                else
-                                    _kernel.Bind(commandHandler)
-                                        .To(assemblyType)
-                                        .Named(CreateCommandHandlerName(assemblyType, commandType));
-                            }
-                            else
-                            {
-                                _logger.Warn($"{assemblyType.Name} contains a command handler which does not comply with signature.");
-                            }
-                        }
-                        if (handlersFoundInType > 0)
-                            _logger.Info($"Found {handlersFoundInType} handlers in type {assemblyType.Name}.");
-                    }
-                    else
-                    {
-                        _logger.Warn($"{assemblyType.Name} contains command handlers, but not marked public.");
-                    }
-                }
-                handlersFoundInAssembly += handlersFoundInType;
-                if (handlersFoundInType > 0)
-                    typesWithHandlers++;
+                var errorMsg = $"Type {handlerType.Name} is not of type {typeof (ICommandHandler<>).Name}.";
+                _logger.Error(errorMsg);
+                throw new ArgumentException(errorMsg);
             }
-            _logger.Info(
-                $"{handlersFoundInAssembly} command handlers registered from {typesWithHandlers} types in assembly {assembly.FullName}.");
+            var genericArguments = handlerType.GetGenericArguments();
+            if (genericArguments.Length != 1 || !typeof (Command).IsAssignableFrom(genericArguments[0]))
+            {
+                var errorMsg = $"{implementationType.Name} contains a command handler which does not comply with signature.";
+                _logger.Warn(errorMsg);
+                throw new ArgumentException(errorMsg);
+            }
+            var commandType = genericArguments[0];
+            _logger.Debug(
+                $"Handling for command {commandType.Name} found in type {implementationType.Name}.");
+            if (_kernel.TryGet(handlerType) != null)
+            {
+                var errorMsg = $"A command handler for command {commandType.Name} is already registered.";
+                _logger.Warn(errorMsg);
+                throw new ArgumentException(errorMsg);
+            }
+            _kernel.Bind(handlerType)
+                .To(implementationType)
+                .Named(CreateCommandHandlerName(implementationType, commandType));
         }
 
         public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : Command
         {
             return (ICommandHandler<T>) _kernel.Get(typeof (ICommandHandler<T>));
+        }
+
+        public void RegisterImplementation(Type implementationType)
+        {
+            var commandHandlers =
+                implementationType.GetInterfaces()
+                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (ICommandHandler<>));
+            foreach (var commandHandler in commandHandlers)
+            {
+                Register(commandHandler, implementationType);
+            }
         }
 
         private string CreateCommandHandlerName(Type handlerType, Type commandType)

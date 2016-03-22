@@ -1,8 +1,8 @@
 ﻿using System;
 using Common.Logging;
-using Herms.Cqrs.Ninject.Tests.Events;
+using Herms.Cqrs.TestContext.Events;
 
-namespace Herms.Cqrs.Ninject.Tests.EventHandlers
+namespace Herms.Cqrs.TestContext.EventHandlers
 {
     public class TestEventHandler2 : IEventHandler<TestEvent2>, IEventHandler<TestEvent3>
     {

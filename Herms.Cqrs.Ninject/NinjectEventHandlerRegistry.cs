@@ -34,9 +34,10 @@ namespace Herms.Cqrs.Ninject
                 var eventType = typeArgument;
                 _log.Debug(
                     $"Handling for event {typeArgument.Name} found in type {implementationType.Name}.");
-                _kernel.Bind(eventHandler)
+                _kernel.Bind<IEventHandler>()
                     .To(implementationType)
-                    .Named(CreateEventHandlerName(implementationType, eventType));
+                    .Named(CreateEventHandlerName(implementationType, eventType))
+                    .WithMetadata("CanHandle", eventType.Name);
             }
             else
             {
@@ -44,10 +45,10 @@ namespace Herms.Cqrs.Ninject
             }
         }
 
-        public IEnumerable<IEventHandler<T>> ResolveHandlers<T>(T eventType) where T : IEvent
+        public EventHandlerCollection ResolveHandlers<T>(T eventType) where T : IEvent
         {
-            var bindings = _kernel.GetBindings(typeof (IEventHandler<T>));
-            return bindings.Select(binding => _kernel.Get<IEventHandler<T>>(binding.BindingConfiguration.Metadata.Name));
+            var handlers = _kernel.GetAll<IEventHandler>(m => m.Get<string>("CanHandle").Equals(eventType.GetType().Name));
+            return new EventHandlerCollection(handlers);
         }
 
         public void RegisterImplementation(Type handler)

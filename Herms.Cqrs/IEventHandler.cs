@@ -7,4 +7,10 @@ namespace Herms.Cqrs
     {
         EventHandlerResult Handle(T @event);
     }
+
+    public interface IEventHandler
+    {
+        EventHandlerResult Handle(IEvent @event);
+        bool CanHandle(IEvent @event);
+    }
 }

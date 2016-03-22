@@ -54,7 +54,6 @@
     <Compile Include="Commands\TestCommand3.cs" />
     <Compile Include="EventHandlers\TestEventHandler1.cs" />
     <Compile Include="EventHandlers\TestEventHandler2.cs" />
-    <Compile Include="Events\EventBase.cs" />
     <Compile Include="Events\TestEvent1.cs" />
     <Compile Include="Events\TestEvent2.cs" />
     <Compile Include="Events\TestEvent3.cs" />

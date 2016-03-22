@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Common.Logging;
 using Herms.Cqrs.Event;
 using Herms.Cqrs.TestContext.Events;
@@ -20,11 +19,9 @@ namespace Herms.Cqrs.Tests
             var testEvent1 = new TestEvent1();
             var eventHandlers = eventHandlerRegistry.ResolveHandlers(testEvent1);
 
-            Assert.Equal(2, eventHandlers.Count());
-
-            var result = testEvent1.Handle(eventHandlerRegistry);
-
-            Assert.Equal(EventHandlerResultType.HandlerFailed, result.Status);
+            Assert.Equal(2, eventHandlers.Count);
+            var results = eventHandlers.Handle(testEvent1);
+            Assert.Equal(EventHandlerResultType.HandlerFailed, results.Status);
         }
     }
 
@@ -56,21 +53,37 @@ namespace Herms.Cqrs.Tests
             _registry[genericArgument] = eventHandlers;
         }
 
-        public IEnumerable<IEventHandler<T>> ResolveHandlers<T>(T eventType) where T : IEvent
+        public EventHandlerCollection ResolveHandlers<T>(T eventType) where T : IEvent
         {
-            var eventHandlers = new List<IEventHandler<T>>();
+            var eventHandlers = new List<IEventHandler>();
             var handlers = _registry[typeof (T)];
             foreach (var handler in handlers)
             {
-                var eventHandler = (IEventHandler<T>) Activator.CreateInstance(handler);
+                var eventHandler = (IEventHandler) Activator.CreateInstance(handler);
                 eventHandlers.Add(eventHandler);
             }
-            return eventHandlers;
+            return new EventHandlerCollection(eventHandlers);
         }
     }
 
-    public class NegativeEventHandler : IEventHandler<TestEvent1>, IEventHandler<TestEvent2>
+    public class NegativeEventHandler : IEventHandler, IEventHandler<TestEvent1>, IEventHandler<TestEvent2>
     {
+        public EventHandlerResult Handle(IEvent @event)
+        {
+            if (CanHandle(@event))
+                return Handle((dynamic) @event);
+            throw new ArgumentException($"Can not handle events of type {@event.GetType().Name}.");
+        }
+
+        public bool CanHandle(IEvent @event)
+        {
+            if (@event is TestEvent1)
+                return true;
+            if (@event is TestEvent2)
+                return true;
+            return false;
+        }
+
         public EventHandlerResult Handle(TestEvent1 @event)
         {
             throw new NotImplementedException("How do you like that?");
@@ -82,8 +95,18 @@ namespace Herms.Cqrs.Tests
         }
     }
 
-    public class PositiveEventHandler : IEventHandler<TestEvent1>
+    public class PositiveEventHandler : IEventHandler, IEventHandler<TestEvent1>
     {
+        public EventHandlerResult Handle(IEvent @event)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CanHandle(IEvent @event)
+        {
+            throw new NotImplementedException();
+        }
+
         public EventHandlerResult Handle(TestEvent1 @event)
         {
             return EventHandlerResult.CreateSuccessResult(GetType());

@@ -29,9 +29,9 @@ namespace Herms.Cqrs.Ninject.Tests
             Assert.NotNull(handlersForTestEvent2);
             Assert.NotNull(handlersForTestEvent3);
 
-            Assert.Equal(1, handlersForTestEvent1.Count());
-            Assert.Equal(2, handlersForTestEvent2.Count());
-            Assert.Equal(1, handlersForTestEvent3.Count());
+            Assert.Equal(1, handlersForTestEvent1.Count);
+            Assert.Equal(2, handlersForTestEvent2.Count);
+            Assert.Equal(1, handlersForTestEvent3.Count);
 
             var handlerForTestCommand1 = commandHandlerRegistry.ResolveHandler(new TestCommand1());
             var handlerForTestCommand2 = commandHandlerRegistry.ResolveHandler(new TestCommand2());

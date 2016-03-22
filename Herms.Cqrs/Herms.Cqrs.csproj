@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregate.cs" />
+    <Compile Include="EventHandlerCollection.cs" />
     <Compile Include="EventHandlerResult.cs" />
     <Compile Include="EventHandlerResults.cs" />
     <Compile Include="IAssemblyScanner.cs" />

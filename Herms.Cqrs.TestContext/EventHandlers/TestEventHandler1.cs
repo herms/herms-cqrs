@@ -1,10 +1,11 @@
 ﻿using System;
 using Common.Logging;
+using Herms.Cqrs.Event;
 using Herms.Cqrs.TestContext.Events;
 
 namespace Herms.Cqrs.TestContext.EventHandlers
 {
-    public class TestEventHandler1 : IEventHandler<TestEvent1>, IEventHandler<TestEvent2>
+    public class TestEventHandler1 : IEventHandler, IEventHandler<TestEvent1>, IEventHandler<TestEvent2>
     {
         private readonly ILog _log;
 
@@ -23,6 +24,22 @@ namespace Herms.Cqrs.TestContext.EventHandlers
         {
             _log.Debug($"{GetType().Name} handling {@event.GetType().Name}");
             return new EventHandlerResult();
+        }
+
+        public EventHandlerResult Handle(IEvent @event)
+        {
+            if (CanHandle(@event))
+                return Handle((dynamic) @event);
+            throw new ArgumentException($"Can not handle event of type {@event.GetType().Name}");
+        }
+
+        public bool CanHandle(IEvent @event)
+        {
+            if (@event is TestEvent1)
+                return true;
+            if (@event is TestEvent2)
+                return true;
+            return false;
         }
     }
 }

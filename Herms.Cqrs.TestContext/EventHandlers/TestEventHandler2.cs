@@ -5,7 +5,7 @@ using Herms.Cqrs.TestContext.Events;
 
 namespace Herms.Cqrs.TestContext.EventHandlers
 {
-    public class TestEventHandler2 : IEventHandler, IEventHandler<TestEvent2>, IEventHandler<TestEvent3>
+    public class TestEventHandler2 : EventHandlerBase, IEventHandler, IEventHandler<TestEvent2>, IEventHandler<TestEvent3>
     {
         private readonly ILog _log;
 
@@ -23,11 +23,7 @@ namespace Herms.Cqrs.TestContext.EventHandlers
 
         public bool CanHandle(IEvent @event)
         {
-            if (@event is TestEvent2)
-                return true;
-            if (@event is TestEvent3)
-                return true;
-            return false;
+            return base.CanHandle(@event, GetType());
         }
 
         public EventHandlerResult Handle(TestEvent2 @event)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Common.Logging;
 using Herms.Cqrs.Event;
 using Herms.Cqrs.TestContext.Events;

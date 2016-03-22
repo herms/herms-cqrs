@@ -8,7 +8,7 @@ using Ninject;
 
 namespace Herms.Cqrs.Ninject
 {
-    public class NinjectEventHandlerRegistry : IEventHandlerRegistry
+    public class NinjectEventHandlerRegistry : IEventHandlerRegistry, IAssemblyScanner
     {
         private const string EventHandlerPrefix = "EventHandler";
         private readonly IKernel _kernel;
@@ -18,29 +18,6 @@ namespace Herms.Cqrs.Ninject
         {
             _kernel = kernel;
             _log = LogManager.GetLogger(GetType());
-        }
-
-        public IEnumerable<IEventHandler<T>> ResolveHandlers<T>(T eventType) where T : IEvent
-        {
-            var bindings = _kernel.GetBindings(typeof (IEventHandler<T>));
-            return bindings.Select(binding => _kernel.Get<IEventHandler<T>>(binding.BindingConfiguration.Metadata.Name));
-        }
-
-        public void RegisterHandler(Type handler)
-        {
-            var handlers =
-                handler.GetInterfaces()
-                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEventHandler<>));
-            foreach (var eventHandler in handlers)
-            {
-                var typeArgument = eventHandler.GetGenericArguments()[0];
-                if (typeof (IEvent).IsAssignableFrom(typeArgument))
-                {
-                    var eventType = typeArgument;
-                    _log.Debug($"Handling for event {typeArgument.Name} found in type {handler.Name}.");
-                    _kernel.Bind(eventHandler).To(handler).Named(CreateEventHandlerName(_log, handler, eventType));
-                }
-            }
         }
 
         public void ScanAssembly(Assembly assembly)
@@ -92,6 +69,29 @@ namespace Herms.Cqrs.Ninject
             }
             _log.Info(
                 $"{handlersFoundInAssembly} command handlers registered from {typesWithHandlers} types in assembly {assembly.FullName}.");
+        }
+
+        public IEnumerable<IEventHandler<T>> ResolveHandlers<T>(T eventType) where T : IEvent
+        {
+            var bindings = _kernel.GetBindings(typeof (IEventHandler<T>));
+            return bindings.Select(binding => _kernel.Get<IEventHandler<T>>(binding.BindingConfiguration.Metadata.Name));
+        }
+
+        public void RegisterHandler(Type handler)
+        {
+            var handlers =
+                handler.GetInterfaces()
+                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEventHandler<>));
+            foreach (var eventHandler in handlers)
+            {
+                var typeArgument = eventHandler.GetGenericArguments()[0];
+                if (typeof (IEvent).IsAssignableFrom(typeArgument))
+                {
+                    var eventType = typeArgument;
+                    _log.Debug($"Handling for event {typeArgument.Name} found in type {handler.Name}.");
+                    _kernel.Bind(eventHandler).To(handler).Named(CreateEventHandlerName(_log, handler, eventType));
+                }
+            }
         }
 
         private string CreateEventHandlerName(Type handlerType, Type eventType)

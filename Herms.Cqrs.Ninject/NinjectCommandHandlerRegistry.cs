@@ -7,7 +7,7 @@ using Ninject;
 
 namespace Herms.Cqrs.Ninject
 {
-    public class NinjectCommandHandlerRegistry : ICommandHandlerRegistry
+    public class NinjectCommandHandlerRegistry : ICommandHandlerRegistry, IAssemblyScanner
     {
         private readonly IKernel _kernel;
         private readonly ILog _logger;
@@ -16,11 +16,6 @@ namespace Herms.Cqrs.Ninject
         {
             _logger = LogManager.GetLogger(GetType());
             _kernel = kernel;
-        }
-
-        public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : Command
-        {
-            return (ICommandHandler<T>) _kernel.Get(typeof (ICommandHandler<T>));
         }
 
         public void ScanAssembly(Assembly assembly)
@@ -78,10 +73,14 @@ namespace Herms.Cqrs.Ninject
                 $"{handlersFoundInAssembly} command handlers registered from {typesWithHandlers} types in assembly {assembly.FullName}.");
         }
 
+        public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : Command
+        {
+            return (ICommandHandler<T>) _kernel.Get(typeof (ICommandHandler<T>));
+        }
+
         private string CreateCommandHandlerName(Type handlerType, Type commandType)
         {
             return $"{handlerType.Name}_{commandType.Name}";
         }
-
     }
 }

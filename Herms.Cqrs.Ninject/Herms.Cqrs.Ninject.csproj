@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IAssemblyScanner.cs" />
     <Compile Include="NinjectCommandHandlerRegistry.cs" />
     <Compile Include="NinjectEventHandlerRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

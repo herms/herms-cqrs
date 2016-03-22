@@ -12,8 +12,16 @@ namespace Herms.Cqrs.TestContext.Events
             var handlers = GetHandlers(registry);
             foreach (var eventHandler in handlers)
             {
-                var result = eventHandler.Handle(this);
-                results.Results.Add(result);
+                EventHandlerResult result;
+                try
+                {
+                    result = eventHandler.Handle(this);
+                }
+                catch (Exception exception)
+                {
+                    result = EventHandlerResult.CreateFailureResult(eventHandler.GetType(), exception.Message);
+                }
+                results.Add(result);
             }
             return results;
         }

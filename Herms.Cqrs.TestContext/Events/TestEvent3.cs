@@ -13,7 +13,7 @@ namespace Herms.Cqrs.TestContext.Events
             foreach (var eventHandler in handlers)
             {
                 var result = eventHandler.Handle(this);
-                results.Results.Add(result);
+                results.Add(result);
             }
             return results;
         }

@@ -19,17 +19,24 @@ namespace Herms.Cqrs
         public EventHandlerResults Handle(IEvent @event)
         {
             var results = new EventHandlerResults();
-            foreach (var eventHandler in _eventHandlers)
+            try
             {
-                try
+                foreach (var eventHandler in _eventHandlers)
                 {
-                    var eventHandlerResult = eventHandler.Handle(@event);
-                    results.Add(eventHandlerResult);
+                    try
+                    {
+                        var eventHandlerResult = eventHandler.Handle(@event);
+                        results.Add(eventHandlerResult);
+                    }
+                    catch (Exception exception)
+                    {
+                        results.Add(EventHandlerResult.CreateFailureResult(eventHandler.GetType(), exception));
+                    }
                 }
-                catch (Exception exception)
-                {
-                    results.Add(EventHandlerResult.CreateFailureResult(eventHandler.GetType(), exception));
-                }
+            }
+            catch (Exception exception)
+            {
+                results.Error(exception);
             }
             return results;
         }

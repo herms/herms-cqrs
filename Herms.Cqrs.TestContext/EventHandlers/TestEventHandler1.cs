@@ -5,7 +5,8 @@ using Herms.Cqrs.TestContext.Events;
 
 namespace Herms.Cqrs.TestContext.EventHandlers
 {
-    public class TestEventHandler1 : EventHandlerBase, IEventHandler, IEventHandler<TestEvent1>, IEventHandler<TestEvent2>
+    public class TestEventHandler1 : EventHandlerBase<TestEventHandler1>, IEventHandler, IEventHandler<TestEvent1>,
+        IEventHandler<TestEvent2>
     {
         private readonly ILog _log;
 

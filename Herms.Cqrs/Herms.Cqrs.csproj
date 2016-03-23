@@ -51,6 +51,8 @@
     <Compile Include="EventHandlerCollection.cs" />
     <Compile Include="EventHandlerResult.cs" />
     <Compile Include="EventHandlerResults.cs" />
+    <Compile Include="Event\Exceptions\EventVersionHigherThanExpectedException.cs" />
+    <Compile Include="IAggregateRepository.cs" />
     <Compile Include="IAssemblyScanner.cs" />
     <Compile Include="IEventDispatcher.cs" />
     <Compile Include="IEventHandlerRegistry.cs" />

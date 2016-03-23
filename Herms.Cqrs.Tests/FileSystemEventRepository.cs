@@ -4,13 +4,12 @@ using System.IO;
 using System.Linq;
 using Common.Logging;
 using Herms.Cqrs.Event;
-using Herms.Cqrs.TestContext;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Herms.Cqrs
+namespace Herms.Cqrs.Tests
 {
-    public class FileSystemEventRepository<TAggregate> : IAggregateRepository<TAggregate> where TAggregate : Aggregate, new()
+    public class FileSystemEventRepository<TAggregate> : IAggregateRepository<TAggregate> where TAggregate : Aggregate, IAggregate, new()
     {
         private readonly ILog _log;
         private readonly string _aggregateTypePath;
@@ -28,7 +27,12 @@ namespace Herms.Cqrs
             _log.Info($"Saving {events.Count} new events for aggregate {aggregate.Id} of type {typeof (TAggregate).Name}.");
             foreach (var @event in events)
             {
-                var envelope = new EventEnvelope { EventData = @event, EventType = @event.GetType().FullName, AssemblyName = @event.GetType().Assembly.FullName};
+                var envelope = new EventEnvelope
+                {
+                    EventData = @event,
+                    EventType = @event.GetType().FullName,
+                    AssemblyName = @event.GetType().Assembly.FullName
+                };
                 var json = JsonConvert.SerializeObject(envelope);
                 if (!Directory.Exists(_aggregateTypePath))
                     Directory.CreateDirectory(_aggregateTypePath);
@@ -63,7 +67,7 @@ namespace Herms.Cqrs
                 var eventType = jObject["EventType"].Value<string>();
                 var assemblyName = jObject["AssemblyName"].Value<string>();
                 _log.Debug($"Read event of type {eventType}. Trying to deserialize...");
-                var type = Type.GetType(eventType+", "+assemblyName, true);
+                var type = Type.GetType(eventType + ", " + assemblyName, true);
                 _log.Trace(type.Name);
                 var payload = jObject["EventData"].ToString();
                 _log.Trace(payload);
@@ -72,14 +76,18 @@ namespace Herms.Cqrs
             }
             try
             {
-                var testAggregate = Aggregate.Load<TAggregate>(events);
+                var testAggregate = new TAggregate();
+                foreach (var @event in events)
+                {
+                    testAggregate.Apply(@event, true);
+                }
                 return testAggregate;
             }
             catch (Exception exception)
             {
                 _log.Error("Could not materialize aggregate from event stream. " + exception.Message);
             }
-            
+
             return null;
         }
 

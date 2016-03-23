@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Common.Logging;
 using Herms.Cqrs.Event;
 
@@ -13,22 +12,12 @@ namespace Herms.Cqrs
 
         static EventHandlerBase()
         {
-            EventTypes = new List<Type>();
-            var handlerInterfaces =
-                typeof (T).GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEventHandler<>));
-            foreach (var handlerInterface in handlerInterfaces)
-            {
-                var genericArguments = handlerInterface.GetGenericArguments();
-                if (genericArguments.Length == 1 && typeof (IEvent).IsAssignableFrom(genericArguments[0]))
-                {
-                    EventTypes.Add(genericArguments[0]);
-                }
-            }
+            EventTypes = GenericArgumentExtractor.GetHandledEvents(typeof (T));
         }
 
         protected EventHandlerBase()
         {
-            _log = LogManager.GetLogger(GetType());
+            _log = LogManager.GetLogger(this.GetType());
         }
 
         protected bool CanHandle(IEvent @event, Type handlerType)

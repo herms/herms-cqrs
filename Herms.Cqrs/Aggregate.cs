@@ -16,8 +16,6 @@ namespace Herms.Cqrs
             Changes = new List<IEvent>();
         }
 
-        protected abstract void Load(IEnumerable<IEvent> events);
-
         public IEnumerable<IEvent> GetChanges()
         {
             return Changes;
@@ -27,13 +25,6 @@ namespace Herms.Cqrs
         {
             if (@event.Version != Version)
                 throw new EventVersionHigherThanExpectedException(Version, @event.Version);
-        }
-
-        public static TAggregate Load<TAggregate>(IEnumerable<IEvent> events) where TAggregate : Aggregate, new()
-        {
-            var aggregate = new TAggregate();
-            aggregate.Load(events);
-            return aggregate;
         }
 
         protected void TagVersionedEvent(VersionedEvent versionedEvent)
@@ -48,5 +39,6 @@ namespace Herms.Cqrs
     public interface IAggregate
     {
         IEnumerable<IEvent> GetChanges();
+        void Apply(IEvent @event, bool replay);
     }
 }

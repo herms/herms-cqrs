@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using Herms.Cqrs.Scanning;
 using Herms.Cqrs.TestContext.CommandHandlers;
 using Herms.Cqrs.TestContext.Commands;
 using Herms.Cqrs.TestContext.Events;
@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Herms.Cqrs.Ninject.Tests
 {
-    public class AssemblyScannerTest
+    public class AssemblyScannerWithNinjectRegistriesTest
     {
         [Fact]
         public void GivenHandlersInAssembly_WhenScanning_ThenHandlersShouldBeRegistered()
@@ -18,8 +18,10 @@ namespace Herms.Cqrs.Ninject.Tests
             var commandHandlerRegistry = new NinjectCommandHandlerRegistry(kernel);
             var eventHandlerRegistry = new NinjectEventHandlerRegistry(kernel);
 
-            var assemblyScanner = new NinjectAssemblyScanner(kernel, eventHandlerRegistry, commandHandlerRegistry);
-            assemblyScanner.ScanAssembly(typeof(TestEvent1).Assembly);
+            var assemblyScanner = new AssemblyScanner();
+            var results = assemblyScanner.ScanAssembly(typeof (TestEvent1).Assembly);
+            commandHandlerRegistry.Register(results.CommandHandlers);
+            eventHandlerRegistry.Register(results.EventHandlers);
 
             var handlersForTestEvent1 = eventHandlerRegistry.ResolveHandlers(new TestEvent1());
             var handlersForTestEvent2 = eventHandlerRegistry.ResolveHandlers(new TestEvent2());

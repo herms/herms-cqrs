@@ -68,9 +68,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyScannerWithNinjectRegistriesTest.cs" />
     <Compile Include="CommandHandlerRegistryTests.cs" />
     <Compile Include="EventHandlerRegistryTests.cs" />
-    <Compile Include="AssemblyScannerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -43,7 +43,7 @@ namespace Herms.Cqrs.Ninject
             }
             _kernel.Bind(handlerType)
                 .To(implementationType)
-                .Named(CreateCommandHandlerName(implementationType, commandType));
+                .Named(this.CreateCommandHandlerName(implementationType, commandType));
         }
 
         public void Register(IEnumerable<HandlerDefinition> definitions)
@@ -66,7 +66,7 @@ namespace Herms.Cqrs.Ninject
                     .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (ICommandHandler<>));
             foreach (var commandHandler in commandHandlers)
             {
-                Register(commandHandler, implementationType);
+                this.Register(commandHandler, implementationType);
             }
         }
 

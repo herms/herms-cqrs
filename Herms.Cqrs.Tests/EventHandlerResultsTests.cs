@@ -33,7 +33,7 @@ namespace Herms.Cqrs.Tests
 
         public PoorMansEventHandlerRegistry()
         {
-            _log = LogManager.GetLogger(GetType());
+            _log = LogManager.GetLogger(this.GetType());
         }
 
         public void Register(Type eventHandler, Type implementationType)
@@ -79,7 +79,7 @@ namespace Herms.Cqrs.Tests
     {
         public EventHandlerResult Handle(IEvent @event)
         {
-            if (CanHandle(@event))
+            if (this.CanHandle(@event))
                 return Handle((dynamic) @event);
             throw new ArgumentException($"Can not handle events of type {@event.GetType().Name}.");
         }
@@ -100,7 +100,7 @@ namespace Herms.Cqrs.Tests
 
         public EventHandlerResult Handle(TestEvent2 @event)
         {
-            return new EventHandlerResult { HandlerName = GetType().Name };
+            return new EventHandlerResult { HandlerName = this.GetType().Name };
         }
     }
 
@@ -118,7 +118,7 @@ namespace Herms.Cqrs.Tests
 
         public EventHandlerResult Handle(TestEvent1 @event)
         {
-            return EventHandlerResult.CreateSuccessResult(GetType());
+            return EventHandlerResult.CreateSuccessResult(this.GetType());
         }
     }
 }

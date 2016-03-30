@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Herms.Cqrs.Ninject.Tests
 {
-    public class AssemblyScannerWithNinjectRegistriesTest
+    public class AssemblyScannerWithNinjectRegistriesTests
     {
         [Fact]
         public void GivenHandlersInAssembly_WhenScanning_ThenHandlersShouldBeRegistered()

@@ -18,7 +18,8 @@ namespace Herms.Cqrs.File
 
         public FileSystemEventRepository()
         {
-            _log = LogManager.GetLogger(this.GetType());
+            // GetLogger(this.GetType()) produces a very long logger name. Using generic type instead.
+            _log = LogManager.GetLogger(typeof(FileSystemEventRepository<>));
             _aggregateTypePath = $"{Directory.GetCurrentDirectory()}\\{typeof (TAggregate).Name}";
             _log.Debug($"Event store path is set to {_aggregateTypePath}.");
         }

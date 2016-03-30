@@ -19,7 +19,7 @@ namespace Herms.Cqrs.Scanning
 
         public AssemblyScanResult ScanAssemblyForEventHandlers(Assembly assembly)
         {
-            _log.Info($"Scanning assembly {assembly.FullName} for event handlers.");
+            _log.Info($"Scanning assembly {assembly.GetName().Name} for event handlers.");
             var result = new AssemblyScanResult();
             this.ScanAssembly(assembly, result, AssemblyScanOptions.EventHandlers);
             return result;
@@ -27,7 +27,7 @@ namespace Herms.Cqrs.Scanning
 
         public AssemblyScanResult ScanAssemblyForCommandHandlers(Assembly assembly)
         {
-            _log.Info($"Scanning assembly {assembly.FullName} for command handlers.");
+            _log.Info($"Scanning assembly {assembly.GetName().Name} for command handlers.");
             var result = new AssemblyScanResult();
             this.ScanAssembly(assembly, result, AssemblyScanOptions.CommandHandlers);
             return result;
@@ -35,7 +35,7 @@ namespace Herms.Cqrs.Scanning
 
         public AssemblyScanResult ScanAssembly(Assembly assembly)
         {
-            _log.Info($"Scanning assembly {assembly.FullName} for command and event handlers.");
+            _log.Info($"Scanning assembly {assembly.GetName().Name} for command and event handlers.");
             var assemblyScanResult = new AssemblyScanResult();
             this.ScanAssembly(assembly, assemblyScanResult, AssemblyScanOptions.AllHandlers);
             return assemblyScanResult;

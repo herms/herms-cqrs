@@ -9,8 +9,6 @@ namespace Herms.Cqrs.TestContext.Models
 {
     public class TestAggregate : EventSourcedAggregateBase, IEventSourced
     {
-        private static readonly List<Type> EventTypes;
-
         static TestAggregate()
         {
             EventTypes = new List<Type> { typeof (TestEvent1), typeof (TestEvent2) };
@@ -43,11 +41,6 @@ namespace Herms.Cqrs.TestContext.Models
         {
             var testEvent2 = new TestEvent2();
             this.Apply(testEvent2);
-        }
-
-        private bool CanHandle(IEvent @event)
-        {
-            return EventTypes.Contains(@event.GetType());
         }
 
         private void Apply(TestEvent1 testEvent1, bool replay = false)

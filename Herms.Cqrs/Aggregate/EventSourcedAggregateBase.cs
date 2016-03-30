@@ -7,6 +7,7 @@ namespace Herms.Cqrs.Aggregate
 {
     public abstract class EventSourcedAggregateBase : AggregateBase
     {
+        protected static List<Type> EventTypes;
         protected List<IEvent> Changes { get; }
         public int Version { get; protected set; } = 0;
 
@@ -34,6 +35,11 @@ namespace Herms.Cqrs.Aggregate
             versionedEvent.Version = Version;
             versionedEvent.EventId = Guid.NewGuid();
             versionedEvent.Timestamp = DateTime.UtcNow;
+        }
+
+        protected bool CanHandle(IEvent @event)
+        {
+            return EventTypes.Contains(@event.GetType());
         }
     }
 }

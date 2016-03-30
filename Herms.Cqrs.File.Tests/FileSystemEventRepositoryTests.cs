@@ -3,7 +3,7 @@ using Herms.Cqrs.TestContext.Commands;
 using Herms.Cqrs.TestContext.Models;
 using Xunit;
 
-namespace Herms.Cqrs.Tests
+namespace Herms.Cqrs.File.Tests
 {
     public class FileSystemEventRepositoryTests
     {

@@ -8,7 +8,7 @@ using Herms.Cqrs.Event;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Herms.Cqrs.Tests
+namespace Herms.Cqrs.File
 {
     public class FileSystemEventRepository<TAggregate> : IAggregateRepository<TAggregate>
         where TAggregate : IAggregate, IEventSourced, new()
@@ -45,7 +45,7 @@ namespace Herms.Cqrs.Tests
                 _log.Trace("Write to path: " + path);
                 try
                 {
-                    File.WriteAllText(path, json);
+                    System.IO.File.WriteAllText(path, json);
                 }
                 catch (Exception exception)
                 {
@@ -64,7 +64,7 @@ namespace Herms.Cqrs.Tests
             var events = new List<IEvent>();
             foreach (var eventFile in eventFiles)
             {
-                var contents = File.ReadAllText(eventFile);
+                var contents = System.IO.File.ReadAllText(eventFile);
                 var jObject = JsonConvert.DeserializeObject<JObject>(contents);
                 var eventType = jObject["EventType"].Value<string>();
                 var assemblyName = jObject["AssemblyName"].Value<string>();

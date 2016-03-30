@@ -8,7 +8,7 @@ namespace Herms.Cqrs.Tests
     public class EventHandlerBaseTests
     {
         [Fact]
-        public void GivenEventHandlerImplementationIsMarkedWithGenericHandler_WhenCanHandleIsCalled_ThenWhat()
+        public void GivenExtensionOfEventHandlerBaseIsMarkedGenericHandlerWithArgument_WhenCanHandleIsCalled_ThenCanHandleShouldAnswerCorrectlyBasedOnReflection()
         {
             var testEventHandler1 = new TestEventHandler1();
             var testEventHandler2 = new TestEventHandler2();

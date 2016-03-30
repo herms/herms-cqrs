@@ -22,8 +22,10 @@ namespace Herms.Cqrs.Aggregate
 
         protected void VerfiyVersion(IEvent @event)
         {
-            if (@event.Version != Version)
-                throw new EventVersionHigherThanExpectedException(Version, @event.Version);
+            if (@event.Version > Version)
+                throw new EventVersionHigherThanExpectedException(Version, Version + 1, @event.Version);
+            if (@event.Version < Version)
+                throw new EventVersionLowerThanCurrentException(Version, @event.Version);
         }
 
         protected void TagVersionedEvent(VersionedEvent versionedEvent)

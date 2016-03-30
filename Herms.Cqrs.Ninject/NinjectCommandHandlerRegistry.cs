@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Common.Logging;
+using Herms.Cqrs.Registration;
 using Ninject;
 
 namespace Herms.Cqrs.Ninject
@@ -8,11 +10,11 @@ namespace Herms.Cqrs.Ninject
     public class NinjectCommandHandlerRegistry : ICommandHandlerRegistry
     {
         private readonly IKernel _kernel;
-        private readonly ILog _logger;
+        private readonly ILog _log;
 
         public NinjectCommandHandlerRegistry(IKernel kernel)
         {
-            _logger = LogManager.GetLogger(GetType());
+            _log = LogManager.GetLogger(this.GetType());
             _kernel = kernel;
         }
 
@@ -21,28 +23,35 @@ namespace Herms.Cqrs.Ninject
             if (!handlerType.IsGenericType && handlerType.GetGenericTypeDefinition() == typeof (ICommandHandler<>))
             {
                 var errorMsg = $"Type {handlerType.Name} is not of type {typeof (ICommandHandler<>).Name}.";
-                _logger.Error(errorMsg);
+                _log.Error(errorMsg);
                 throw new ArgumentException(errorMsg);
             }
             var genericArguments = handlerType.GetGenericArguments();
             if (genericArguments.Length != 1 || !typeof (Command).IsAssignableFrom(genericArguments[0]))
             {
                 var errorMsg = $"{implementationType.Name} contains a command handler which does not comply with signature.";
-                _logger.Warn(errorMsg);
+                _log.Warn(errorMsg);
                 throw new ArgumentException(errorMsg);
             }
             var commandType = genericArguments[0];
-            _logger.Debug(
+            _log.Debug(
                 $"Handling for command {commandType.Name} found in type {implementationType.Name}.");
             if (_kernel.TryGet(handlerType) != null)
             {
                 var errorMsg = $"A command handler for command {commandType.Name} is already registered.";
-                _logger.Warn(errorMsg);
                 throw new ArgumentException(errorMsg);
             }
             _kernel.Bind(handlerType)
                 .To(implementationType)
                 .Named(CreateCommandHandlerName(implementationType, commandType));
+        }
+
+        public void Register(IEnumerable<HandlerDefinition> definitions)
+        {
+            foreach (var handlerDefinition in definitions)
+            {
+                this.Register(handlerDefinition.Handler, handlerDefinition.Implementation);
+            }
         }
 
         public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : Command
@@ -63,6 +72,9 @@ namespace Herms.Cqrs.Ninject
 
         private string CreateCommandHandlerName(Type handlerType, Type commandType)
         {
+            var eventHandlerName = $"{handlerType.Name}_{commandType.Name}";
+            if (_log.IsTraceEnabled)
+                _log.Trace($"Handler name for type {handlerType.Name} handling command {commandType.Name}: {eventHandlerName}.");
             return $"{handlerType.Name}_{commandType.Name}";
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Common.Logging;
 using Herms.Cqrs.Event;
+using Herms.Cqrs.Registration;
 using Herms.Cqrs.TestContext.Events;
 using Xunit;
 
@@ -51,6 +52,14 @@ namespace Herms.Cqrs.Tests
             }
             eventHandlers.Add(implementationType);
             _registry[genericArgument] = eventHandlers;
+        }
+
+        public void Register(IEnumerable<HandlerDefinition> handlerDefinitions)
+        {
+            foreach (var handlerDefinition in handlerDefinitions)
+            {
+                this.Register(handlerDefinition.Handler, handlerDefinition.Implementation);
+            }
         }
 
         public EventHandlerCollection ResolveHandlers<T>(T eventType) where T : IEvent

@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.Logging;
 using Herms.Cqrs.Event;
+using Herms.Cqrs.Registration;
 using Ninject;
 
 namespace Herms.Cqrs.Ninject
 {
     public class NinjectEventHandlerRegistry : IEventHandlerRegistry
     {
-        private const string EventHandlerPrefix = "EventHandler";
         private readonly IKernel _kernel;
         private readonly ILog _log;
 
         public NinjectEventHandlerRegistry(IKernel kernel)
         {
             _kernel = kernel;
-            _log = LogManager.GetLogger(GetType());
+            _log = LogManager.GetLogger(this.GetType());
         }
 
         public void Register(Type eventHandler, Type implementationType)
@@ -36,12 +36,20 @@ namespace Herms.Cqrs.Ninject
                     $"Handling for event {typeArgument.Name} found in type {implementationType.Name}.");
                 _kernel.Bind<IEventHandler>()
                     .To(implementationType)
-                    .Named(CreateEventHandlerName(implementationType, eventType))
+                    .Named(this.CreateEventHandlerName(implementationType, eventType))
                     .WithMetadata("CanHandle", eventType.Name);
             }
             else
             {
                 _log.Warn($"{implementationType.Name} contains an event handler which does not comply with signature.");
+            }
+        }
+
+        public void Register(IEnumerable<HandlerDefinition> handlerDefinitions)
+        {
+            foreach (var handlerDefinition in handlerDefinitions)
+            {
+                this.Register(handlerDefinition.Handler, handlerDefinition.Implementation);
             }
         }
 
@@ -58,20 +66,15 @@ namespace Herms.Cqrs.Ninject
                     .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEventHandler<>));
             foreach (var eventHandler in handlers)
             {
-                Register(eventHandler, handler);
+                this.Register(eventHandler, handler);
             }
         }
 
         private string CreateEventHandlerName(Type handlerType, Type eventType)
         {
-            return $"{handlerType.Name}_{eventType.Name}";
-        }
-
-        private static string CreateEventHandlerName(ILog log, Type handler, Type eventType)
-        {
-            var eventHandlerName = $"{EventHandlerPrefix}_{eventType.Name}_{handler.Name}";
-            if (log.IsTraceEnabled)
-                log.Trace($"Handler name for type {handler.Name} handling event {eventType.Name}: {eventHandlerName}.");
+            var eventHandlerName = $"{handlerType.Name}_{eventType.Name}";
+            if (_log.IsTraceEnabled)
+                _log.Trace($"Handler name for type {handlerType.Name} handling event {eventType.Name}: {eventHandlerName}.");
             return eventHandlerName;
         }
     }

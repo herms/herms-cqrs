@@ -10,12 +10,12 @@ namespace Herms.Cqrs.TestContext.CommandHandlers
 
         public TestCommandHandler1()
         {
-            _log = LogManager.GetLogger(GetType());
+            _log = LogManager.GetLogger(this.GetType());
         }
 
         public void Handle(TestCommand1 command)
         {
-            _log.Debug($"{GetType().Name} handling {command.GetType().Name}");
+            _log.Debug($"{this.GetType().Name} handling {command.GetType().Name}");
         }
     }
 }

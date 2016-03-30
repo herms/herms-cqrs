@@ -12,30 +12,30 @@ namespace Herms.Cqrs.TestContext.EventHandlers
 
         public TestEventHandler1()
         {
-            _log = LogManager.GetLogger(GetType());
+            _log = LogManager.GetLogger(this.GetType());
         }
 
         public EventHandlerResult Handle(IEvent @event)
         {
-            if (CanHandle(@event))
+            if (this.CanHandle(@event))
                 return Handle((dynamic) @event);
             throw new ArgumentException($"Can not handle event of type {@event.GetType().Name}");
         }
 
         public bool CanHandle(IEvent @event)
         {
-            return base.CanHandle(@event, GetType());
+            return base.CanHandle(@event, this.GetType());
         }
 
         public EventHandlerResult Handle(TestEvent1 @event)
         {
-            _log.Debug($"{GetType().Name} handling {@event.GetType().Name}");
+            _log.Debug($"{this.GetType().Name} handling {@event.GetType().Name}");
             return new EventHandlerResult();
         }
 
         public EventHandlerResult Handle(TestEvent2 @event)
         {
-            _log.Debug($"{GetType().Name} handling {@event.GetType().Name}");
+            _log.Debug($"{this.GetType().Name} handling {@event.GetType().Name}");
             return new EventHandlerResult();
         }
     }

@@ -7,11 +7,6 @@ namespace Herms.Cqrs
 {
     public static class GenericArgumentExtractor
     {
-        public static List<Type> GetApplicableEvents(Type implementationType)
-        {
-            return GetGenericArgumentsFromInterface(implementationType, typeof (IApplyEvent<>), typeof (IEvent));
-        }
-
         public static List<Type> GetHandledEvents(Type implementationType)
         {
             return GetGenericArgumentsFromInterface(implementationType, typeof (IEventHandler<>), typeof (IEvent));

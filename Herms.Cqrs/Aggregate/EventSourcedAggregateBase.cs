@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using Herms.Cqrs.Event;
 using Herms.Cqrs.Event.Exceptions;
 
-namespace Herms.Cqrs
+namespace Herms.Cqrs.Aggregate
 {
-    public abstract class Aggregate
+    public abstract class EventSourcedAggregateBase : AggregateBase
     {
-        public Guid Id { get; protected set; }
         protected List<IEvent> Changes { get; }
         public int Version { get; protected set; } = 0;
 
-        protected Aggregate()
+        protected EventSourcedAggregateBase()
         {
             Changes = new List<IEvent>();
         }
@@ -34,11 +33,5 @@ namespace Herms.Cqrs
             versionedEvent.EventId = Guid.NewGuid();
             versionedEvent.Timestamp = DateTime.UtcNow;
         }
-    }
-
-    public interface IAggregate
-    {
-        IEnumerable<IEvent> GetChanges();
-        void Apply(IEvent @event, bool replay);
     }
 }

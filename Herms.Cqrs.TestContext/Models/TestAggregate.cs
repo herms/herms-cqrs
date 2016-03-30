@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using Herms.Cqrs.Aggregate;
 using Herms.Cqrs.Event;
 using Herms.Cqrs.TestContext.Commands;
 using Herms.Cqrs.TestContext.Events;
 
 namespace Herms.Cqrs.TestContext.Models
 {
-    public class TestAggregate : Aggregate, IAggregate, IApplyEvent<TestEvent1>, IApplyEvent<TestEvent2>
+    public class TestAggregate : EventSourcedAggregateBase, IEventSourced
     {
         private static readonly List<Type> EventTypes;
 
         static TestAggregate()
         {
-            EventTypes = GenericArgumentExtractor.GetApplicableEvents(typeof (TestAggregate));
+            EventTypes = new List<Type> { typeof (TestEvent1), typeof (TestEvent2) };
         }
 
         public TestAggregate()
@@ -20,32 +21,16 @@ namespace Herms.Cqrs.TestContext.Models
             Id = Guid.NewGuid();
         }
 
-        public void Apply(IEvent @event, bool replay)
+        public void Load(IEnumerable<IEvent> events)
         {
-            if (EventTypes.Contains(@event.GetType()))
-                Apply((dynamic) @event, replay);
-        }
-
-        public void Apply(TestEvent1 testEvent1, bool replay = false)
-        {
-            Version++;
-            if (!replay)
+            foreach (var @event in events)
             {
-                Changes.Add(testEvent1);
-                this.TagVersionedEvent(testEvent1);
+                if (this.CanHandle(@event))
+                    Apply((dynamic) @event);
+                else
+                    throw new ArgumentException(
+                        $"Aggregate of type {this.GetType().Name} can not apply event of type {@event.GetType().Name}.");
             }
-            this.VerfiyVersion(testEvent1);
-        }
-
-        public void Apply(TestEvent2 testEvent2, bool replay = false)
-        {
-            Version++;
-            if (!replay)
-            {
-                Changes.Add(testEvent2);
-                this.TagVersionedEvent(testEvent2);
-            }
-            this.VerfiyVersion(testEvent2);
         }
 
         public void InvokeCommand1(TestCommand1 command)
@@ -58,6 +43,33 @@ namespace Herms.Cqrs.TestContext.Models
         {
             var testEvent2 = new TestEvent2();
             this.Apply(testEvent2);
+        }
+
+        private bool CanHandle(IEvent @event)
+        {
+            return EventTypes.Contains(@event.GetType());
+        }
+
+        private void Apply(TestEvent1 testEvent1, bool replay = false)
+        {
+            Version++;
+            if (!replay)
+            {
+                Changes.Add(testEvent1);
+                this.TagVersionedEvent(testEvent1);
+            }
+            this.VerfiyVersion(testEvent1);
+        }
+
+        private void Apply(TestEvent2 testEvent2, bool replay = false)
+        {
+            Version++;
+            if (!replay)
+            {
+                Changes.Add(testEvent2);
+                this.TagVersionedEvent(testEvent2);
+            }
+            this.VerfiyVersion(testEvent2);
         }
     }
 }

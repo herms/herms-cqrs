@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Common.Logging;
+using Herms.Cqrs.Aggregate;
 using Herms.Cqrs.Event;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Herms.Cqrs.Tests
 {
-    public class FileSystemEventRepository<TAggregate> : IAggregateRepository<TAggregate> where TAggregate : Aggregate, IAggregate, new()
+    public class FileSystemEventRepository<TAggregate> : IAggregateRepository<TAggregate>
+        where TAggregate : IAggregate, IEventSourced, new()
     {
         private readonly ILog _log;
         private readonly string _aggregateTypePath;
@@ -77,10 +79,7 @@ namespace Herms.Cqrs.Tests
             try
             {
                 var testAggregate = new TAggregate();
-                foreach (var @event in events)
-                {
-                    testAggregate.Apply(@event, true);
-                }
+                testAggregate.Load(events);
                 return testAggregate;
             }
             catch (Exception exception)
@@ -88,7 +87,7 @@ namespace Herms.Cqrs.Tests
                 _log.Error("Could not materialize aggregate from event stream. " + exception.Message);
             }
 
-            return null;
+            return default(TAggregate);
         }
 
         private static string GetFileNameFromEventVersion(IEvent @event)

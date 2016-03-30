@@ -46,7 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aggregate.cs" />
+    <Compile Include="Aggregate\AggregateBase.cs" />
+    <Compile Include="Aggregate\EventSourcedAggregateBase.cs" />
+    <Compile Include="Aggregate\IAggregate.cs" />
+    <Compile Include="Aggregate\IEventSourced.cs" />
     <Compile Include="EventHandlerBase.cs" />
     <Compile Include="EventHandlerCollection.cs" />
     <Compile Include="EventHandlerResult.cs" />
@@ -59,7 +62,6 @@
     <Compile Include="IEventHandlerRegistry.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Event\Exceptions\EventVersionLowerThanCurrentException.cs" />
-    <Compile Include="Event\IApplyEvent.cs" />
     <Compile Include="Event\IEvent.cs" />
     <Compile Include="Event\VersionedEvent.cs" />
     <Compile Include="ICommandHandler.cs" />

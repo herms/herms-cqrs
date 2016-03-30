@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Common.Logging;
+using Herms.Cqrs.Event;
 using Herms.Cqrs.Registration;
 
 namespace Herms.Cqrs.Scanning
@@ -88,8 +89,18 @@ namespace Herms.Cqrs.Scanning
             {
                 foreach (var eventHandler in eventHandlerList)
                 {
-                    handlers.Add(new HandlerDefinition { Handler = eventHandler, Implementation = assemblyType });
-                    //_eventHandlerRegistry.Register(eventHandler, assemblyType);
+                    var arguments = eventHandler.GetGenericArguments();
+                    if (arguments.Length != 1 || arguments[0] == null)
+                        throw new ArgumentException($"Generic argument was not found for handler {eventHandler.FullName}.");
+                    var argument = arguments[0];
+                    if (!typeof (IEvent).IsAssignableFrom(argument))
+                        throw new ArgumentException($"Generic argument is not assignable from type {typeof (IEvent).FullName}.");
+                    handlers.Add(new HandlerDefinition
+                    {
+                        Handler = eventHandler,
+                        Argument = argument,
+                        Implementation = assemblyType
+                    });
                     handlersFoundInType++;
                 }
                 if (handlersFoundInType > 0)
@@ -113,8 +124,19 @@ namespace Herms.Cqrs.Scanning
                 {
                     try
                     {
-                        handlers.Add(new HandlerDefinition { Handler = commandHandler, Implementation = assemblyType });
-                        //_commandHandlerRegistry.Register(commandHandler, assemblyType);
+                        var arguments = commandHandler.GetGenericArguments();
+                        if (arguments.Length != 1 || arguments[0] == null)
+                            throw new ArgumentException($"Generic argument was not found for handler {commandHandler.FullName}.");
+                        var argument = arguments[0];
+                        if (!typeof (Command).IsAssignableFrom(argument))
+                            throw new ArgumentException($"Generic argument is not assignable from type {typeof (Command).FullName}.");
+                        var handlerDefinition = new HandlerDefinition
+                        {
+                            Handler = commandHandler,
+                            Argument = argument,
+                            Implementation = assemblyType
+                        };
+                        handlers.Add(handlerDefinition);
                         handlersFoundInType++;
                     }
                     catch (ArgumentException argumentException)

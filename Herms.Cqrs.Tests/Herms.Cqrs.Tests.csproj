@@ -72,6 +72,7 @@
     <Compile Include="FileSystemEventRepository.cs" />
     <Compile Include="FileSystemEventRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scanning\AssemblyScannerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Herms.Cqrs.TestContext\Herms.Cqrs.TestContext.csproj">

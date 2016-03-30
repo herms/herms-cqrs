@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Herms.Cqrs.Event
 {
@@ -10,5 +9,4 @@ namespace Herms.Cqrs.Event
         int Version { get; }
         DateTime Timestamp { get; }
     }
-
 }

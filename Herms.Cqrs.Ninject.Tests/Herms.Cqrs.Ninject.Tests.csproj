@@ -69,8 +69,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyScannerWithNinjectRegistriesTests.cs" />
-    <Compile Include="CommandHandlerRegistryTests.cs" />
-    <Compile Include="EventHandlerRegistryTests.cs" />
+    <Compile Include="NinjectCommandHandlerRegistryTests.cs" />
+    <Compile Include="NinjectEventHandlerRegistryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

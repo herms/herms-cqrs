@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Herms.Cqrs.Ninject.Tests
 {
-    public class EventHandlerRegistryTests
+    public class NinjectEventHandlerRegistryTests
     {
         [Fact]
         public void GivenEventHandlersInRegistry_WhenRequestingHandlersForAnEventType_ThenTheCorrespondingHandlersShouldBeReturned()

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Herms.Cqrs.Ninject.Tests
 {
-    public class CommandHandlerRegistryTests
+    public class NinjectCommandHandlerRegistryTests
     {
         [Fact]
         public void GivenCommandHandlersInRegistry_WhenRequestCommandHandler_ThenTheCorrespondingHandlerShouldBeReturned()

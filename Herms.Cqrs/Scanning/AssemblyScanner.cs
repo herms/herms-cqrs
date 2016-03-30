@@ -74,7 +74,7 @@ namespace Herms.Cqrs.Scanning
             var typesWithHandlers = assemblyScanResult.Implementations.Count;
 
             _log.Info(
-                $"Assembly scan yielded {commandHandlersFound + eventHandlersFound} handlers ({commandHandlersFound}c/{eventHandlersFound}e) in {typesWithHandlers} types.");
+                $"Assembly scan yielded {commandHandlersFound + eventHandlersFound} handlers ({commandHandlersFound} command, {eventHandlersFound} event) in {typesWithHandlers} types.");
         }
 
         private List<HandlerDefinition> FindEventHandlers(Type assemblyType)

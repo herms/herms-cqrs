@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Common.Logging;
 using Herms.Cqrs.Aggregate;
 using Herms.Cqrs.Event;
 using Herms.Cqrs.TestContext.Commands;
@@ -9,6 +10,10 @@ namespace Herms.Cqrs.TestContext.Models
 {
     public class TestAggregate : EventSourcedAggregateBase, IEventSourced
     {
+        private readonly ILog _log;
+
+        public string Prop1 { get; set; }
+
         static TestAggregate()
         {
             EventTypes = new List<Type> { typeof (TestEvent1), typeof (TestEvent2) };
@@ -16,6 +21,7 @@ namespace Herms.Cqrs.TestContext.Models
 
         public TestAggregate()
         {
+            _log = LogManager.GetLogger(this.GetType());
             Id = Guid.NewGuid();
         }
 
@@ -23,6 +29,11 @@ namespace Herms.Cqrs.TestContext.Models
         {
             foreach (var @event in events)
             {
+                if (@event == null)
+                {
+                    throw new ArgumentNullException("Cannot load a null event!");
+                }
+                
                 if (this.CanHandle(@event))
                     Apply((dynamic) @event);
                 else
@@ -33,18 +44,23 @@ namespace Herms.Cqrs.TestContext.Models
 
         public void InvokeCommand1(TestCommand1 command)
         {
+            if(_log.IsTraceEnabled)
+                _log.Trace($"Executing command {command.GetType()}.");
             var testEvent1 = new TestEvent1();
             this.Apply(testEvent1);
         }
 
         public void InvokeCommand2(TestCommand2 command)
         {
-            var testEvent2 = new TestEvent2();
+            if (_log.IsTraceEnabled)
+                _log.Trace($"Executing command {command.GetType()}.");
+            var testEvent2 = new TestEvent2 { Param1 = command.Param1 };
             this.Apply(testEvent2);
         }
 
         private void Apply(TestEvent1 testEvent1, bool replay = false)
         {
+            Id = testEvent1.AggregateId;
             Version++;
             if (!replay)
             {
@@ -52,10 +68,13 @@ namespace Herms.Cqrs.TestContext.Models
                 this.TagVersionedEvent(testEvent1);
             }
             this.VerfiyVersion(testEvent1);
+            if (_log.IsTraceEnabled)
+                _log.Trace($"Applied event {testEvent1.GetType()}.");
         }
 
         private void Apply(TestEvent2 testEvent2, bool replay = false)
         {
+            Prop1 = testEvent2.Param1;
             Version++;
             if (!replay)
             {
@@ -63,6 +82,8 @@ namespace Herms.Cqrs.TestContext.Models
                 this.TagVersionedEvent(testEvent2);
             }
             this.VerfiyVersion(testEvent2);
+            if (_log.IsTraceEnabled)
+                _log.Trace($"Applied event {testEvent2.GetType()}.");
         }
     }
 }

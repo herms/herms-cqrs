@@ -60,7 +60,22 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Herms.Cqrs.Azure\Herms.Cqrs.Azure.csproj">
+      <Project>{04fd4112-e4e1-4179-b4e9-a18d9958525e}</Project>
+      <Name>Herms.Cqrs.Azure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Herms.Cqrs.TestContext\Herms.Cqrs.TestContext.csproj">
+      <Project>{9b78081c-d0cc-4d17-9287-efeaa6e12d26}</Project>
+      <Name>Herms.Cqrs.TestContext</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Herms.Cqrs\Herms.Cqrs.csproj">
+      <Project>{85C2484C-C0E1-4D65-868C-F7753F90A01D}</Project>
+      <Name>Herms.Cqrs</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

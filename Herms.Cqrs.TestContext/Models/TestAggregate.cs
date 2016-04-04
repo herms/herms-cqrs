@@ -30,15 +30,11 @@ namespace Herms.Cqrs.TestContext.Models
             foreach (var @event in events)
             {
                 if (@event == null)
-                {
-                    throw new ArgumentNullException("Cannot load a null event!");
-                }
-                
-                if (this.CanHandle(@event))
-                    Apply((dynamic) @event);
-                else
+                    throw new ArgumentNullException(nameof(@event));
+                if (!this.CanHandle(@event))
                     throw new ArgumentException(
                         $"Aggregate of type {this.GetType().Name} can not apply event of type {@event.GetType().Name}.");
+                Apply((dynamic) @event);
             }
         }
 
@@ -46,7 +42,7 @@ namespace Herms.Cqrs.TestContext.Models
         {
             if(_log.IsTraceEnabled)
                 _log.Trace($"Executing command {command.GetType()}.");
-            var testEvent1 = new TestEvent1();
+            var testEvent1 = new TestEvent1 {AggregateId = Id};
             this.Apply(testEvent1);
         }
 

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Common.Logging;
 using Herms.Cqrs.Aggregate;
+using Herms.Cqrs.Aggregate.Exceptions;
 using Herms.Cqrs.Event;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -11,22 +13,20 @@ namespace Herms.Cqrs.Azure
 {
     public class AzureEventRepository<TAggregate> : IAggregateRepository<TAggregate> where TAggregate : IAggregate, IEventSourced, new()
     {
-        private readonly string _tableName;
         private readonly string GuidStringFormat = "D";
         private readonly ILog _log;
         private CloudTable _table;
 
         public AzureEventRepository(string connectionString, string tableName)
         {
-            _log = LogManager.GetLogger(this.GetType());
-            _tableName = tableName;
+            _log = LogManager.GetLogger(typeof (AzureEventRepository<>));
             var storageAccount = CloudStorageAccount.Parse(connectionString);
             this.CreateTableReference(tableName, storageAccount);
         }
 
         public AzureEventRepository(bool clean = false)
         {
-            _log = LogManager.GetLogger(this.GetType());
+            _log = LogManager.GetLogger(typeof (AzureEventRepository<>));
             var storageAccount = CloudStorageAccount.DevelopmentStorageAccount;
             var tableName = typeof (TAggregate).Name;
             this.CreateTableReference(tableName, storageAccount, clean);
@@ -51,7 +51,14 @@ namespace Herms.Cqrs.Azure
                 batch.Add(operation);
             }
             var result = _table.ExecuteBatch(batch);
-            if (result.Any(r => r.HttpStatusCode != 200)) {}
+            if (result.Any(IsNotSuccessStatus))
+            {
+                _log.Fatal($"Error while saving events!");
+                foreach (var r in result.Where(IsNotSuccessStatus))
+                {
+                    _log.Error($"HTTP {r.HttpStatusCode} for {r.Result}.");
+                }
+            }
         }
 
         public TAggregate Get(Guid id)
@@ -60,24 +67,38 @@ namespace Herms.Cqrs.Azure
                 new TableQuery<EventEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal,
                     id.ToString(GuidStringFormat)));
             var results = _table.ExecuteQuery(query);
-            var eventEntities = results.ToList().OrderBy(e => e.Version);
+            var eventEntities = results.OrderBy(e => e.Version).ToList();
             if (eventEntities.Any())
             {
+                _log.Debug($"Found {eventEntities.Count} events.");
                 var aggregate = new TAggregate();
-                aggregate.Load(eventEntities.Select(e => (IEvent)JsonConvert.DeserializeObject(e.Payload, this.GetTypeFromEntity(e))));
+                var events = eventEntities.Select(e => (IEvent) JsonConvert.DeserializeObject(e.Payload, this.GetTypeFromEntity(e)));
+                var eventList = events as IList<IEvent> ?? events.ToList();
+                _log.Info($"Deserialized {eventList.Count} events...");
+                if (eventEntities.Count != eventList.Count)
+                {
+                    _log.Error("Number of events found did not match number of events deserialized.");
+                    throw new AggregateLoadingException();
+                }
+                aggregate.Load(eventList);
                 return aggregate;
             }
             return default(TAggregate);
         }
 
+        private static bool IsNotSuccessStatus(TableResult r)
+        {
+            return r.HttpStatusCode < 200 || r.HttpStatusCode >= 300;
+        }
+
         private Type GetTypeFromEntity(EventEntity eventEntity)
         {
             var fullyQualifiedTypeName = $"{eventEntity.EventType}, {eventEntity.AssemblyName}";
-            if(_log.IsTraceEnabled)
+            if (_log.IsTraceEnabled)
                 _log.Trace($"Trying to get type by name: {fullyQualifiedTypeName}");
             var typeFromEntity = Type.GetType(fullyQualifiedTypeName);
-            if(typeFromEntity == null)
-                _log.Warn($"Could not find type {fullyQualifiedTypeName}"); 
+            if (typeFromEntity == null)
+                _log.Warn($"Could not find type {fullyQualifiedTypeName}");
             return typeFromEntity;
         }
 

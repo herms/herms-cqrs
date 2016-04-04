@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Herms.Cqrs.File.Tests", "He
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Herms.Cqrs.Azure", "Herms.Cqrs.Azure\Herms.Cqrs.Azure.csproj", "{04FD4112-E4E1-4179-B4E9-A18D9958525E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Herms.Cqrs.Azure.Tests", "Herms.Cqrs.Azure.Tests\Herms.Cqrs.Azure.Tests.csproj", "{12AF92DF-3561-4983-8C71-32BE938B489F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{04FD4112-E4E1-4179-B4E9-A18D9958525E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04FD4112-E4E1-4179-B4E9-A18D9958525E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04FD4112-E4E1-4179-B4E9-A18D9958525E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12AF92DF-3561-4983-8C71-32BE938B489F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12AF92DF-3561-4983-8C71-32BE938B489F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12AF92DF-3561-4983-8C71-32BE938B489F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12AF92DF-3561-4983-8C71-32BE938B489F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

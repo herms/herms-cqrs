@@ -13,6 +13,7 @@ namespace Herms.Cqrs.TestContext.Models
         private readonly ILog _log;
 
         public string Prop1 { get; set; }
+        public List<string> Prop1History { get; private set; } = new List<string>();
 
         static TestAggregate()
         {
@@ -40,9 +41,9 @@ namespace Herms.Cqrs.TestContext.Models
 
         public void InvokeCommand1(TestCommand1 command)
         {
-            if(_log.IsTraceEnabled)
+            if (_log.IsTraceEnabled)
                 _log.Trace($"Executing command {command.GetType()}.");
-            var testEvent1 = new TestEvent1 {AggregateId = Id};
+            var testEvent1 = new TestEvent1 { AggregateId = Id };
             this.Apply(testEvent1);
         }
 
@@ -71,6 +72,7 @@ namespace Herms.Cqrs.TestContext.Models
         private void Apply(TestEvent2 testEvent2, bool replay = false)
         {
             Prop1 = testEvent2.Param1;
+            Prop1History.Add(Prop1);
             Version++;
             if (!replay)
             {

@@ -37,9 +37,10 @@ namespace Herms.Cqrs.Azure.Tests
             var a2 = new TestAggregate();
 
             a1.InvokeCommand1(new TestCommand1());
-            a1.InvokeCommand2(new TestCommand2 {Param1 = "A1"});
+            a1.InvokeCommand2(new TestCommand2 {Param1 = "A1-1"});
             a2.InvokeCommand1(new TestCommand1());
-            a2.InvokeCommand2(new TestCommand2 {Param1 = "A2"});
+            a1.InvokeCommand2(new TestCommand2 {Param1 = "A1-2"});
+            a2.InvokeCommand2(new TestCommand2 {Param1 = "A2-1"});
 
             _sut.Save(a1);
             _sut.Save(a2);
@@ -47,8 +48,10 @@ namespace Herms.Cqrs.Azure.Tests
             a1 = _sut.Get(a1.Id);
             a2 = _sut.Get(a2.Id);
 
-            Assert.Equal("A1", a1.Prop1);
-            Assert.Equal("A2", a2.Prop1);
+            Assert.Equal("A1-2", a1.Prop1);
+            Assert.Equal("A2-1", a2.Prop1);
+
+            Assert.True(a1.Prop1History.Contains("A1-1"));
         }
     }
 }

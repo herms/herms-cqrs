@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Herms.Cqrs.TestContext.Commands;
 using Herms.Cqrs.TestContext.Models;
 using Xunit;
@@ -44,6 +45,8 @@ namespace Herms.Cqrs.Azure.Tests
 
             _sut.Save(a1);
             _sut.Save(a2);
+
+            Task.Delay(50).Wait();
 
             a1 = _sut.Get(a1.Id);
             a2 = _sut.Get(a2.Id);

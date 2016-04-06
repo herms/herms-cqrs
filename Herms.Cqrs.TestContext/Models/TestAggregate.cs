@@ -12,7 +12,7 @@ namespace Herms.Cqrs.TestContext.Models
     {
         private readonly ILog _log;
 
-        public string Prop1 { get; set; }
+        public string Prop1 { get; private set; }
         public List<string> Prop1History { get; private set; } = new List<string>();
 
         static TestAggregate()

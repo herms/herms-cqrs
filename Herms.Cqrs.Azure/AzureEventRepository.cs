@@ -77,8 +77,9 @@ namespace Herms.Cqrs.Azure
                 _log.Info($"Deserialized {eventList.Count} events...");
                 if (eventEntities.Count != eventList.Count)
                 {
-                    _log.Error("Number of events found did not match number of events deserialized.");
-                    throw new AggregateLoadingException();
+                    var errorMessage = "Number of events found did not match number of events deserialized.";
+                    _log.Error(errorMessage);
+                    throw new AggregateLoadingException(errorMessage);
                 }
                 aggregate.Load(eventList);
                 return aggregate;

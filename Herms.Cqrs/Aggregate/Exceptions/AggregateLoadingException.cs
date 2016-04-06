@@ -1,6 +1,9 @@
-﻿using System;
+using System;
 
 namespace Herms.Cqrs.Aggregate.Exceptions
 {
-    public class AggregateLoadingException : Exception {}
+    public class AggregateLoadingException : Exception
+    {
+        public AggregateLoadingException(string message) : base(message) {}
+    }
 }

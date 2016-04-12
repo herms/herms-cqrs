@@ -8,7 +8,7 @@ using Herms.Cqrs.TestContext.Events;
 
 namespace Herms.Cqrs.TestContext.Models
 {
-    public class TestAggregate : EventSourcedAggregateBase, IEventSourced
+    public class TestAggregate : EventSourcedAggregateBase
     {
         private readonly ILog _log;
 
@@ -26,7 +26,7 @@ namespace Herms.Cqrs.TestContext.Models
             Id = Guid.NewGuid();
         }
 
-        public void Load(IEnumerable<IEvent> events)
+        public override void Load(IEnumerable<IEvent> events)
         {
             foreach (var @event in events)
             {
@@ -64,7 +64,7 @@ namespace Herms.Cqrs.TestContext.Models
                 Changes.Add(testEvent1);
                 this.TagVersionedEvent(testEvent1);
             }
-            this.VerfiyVersion(testEvent1);
+            this.VerfiyEventVersion(testEvent1);
             if (_log.IsTraceEnabled)
                 _log.Trace($"Applied event {testEvent1.GetType()}.");
         }
@@ -79,7 +79,7 @@ namespace Herms.Cqrs.TestContext.Models
                 Changes.Add(testEvent2);
                 this.TagVersionedEvent(testEvent2);
             }
-            this.VerfiyVersion(testEvent2);
+            this.VerfiyEventVersion(testEvent2);
             if (_log.IsTraceEnabled)
                 _log.Trace($"Applied event {testEvent2.GetType()}.");
         }

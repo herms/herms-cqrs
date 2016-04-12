@@ -2,13 +2,13 @@
 
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>Herms.Cqrs</id>
+    <id>Herms.Cqrs.Azure</id>
     <version>$version$</version>
     <authors>Herman Crawfurd Svensen</authors>
     <owners>Herman Crawfurd Svensen</owners>
     <description>A small CQRS framework in its very very early stages.</description>
   </metadata>
   <files>
-    <file src="bin\Release\Herms.Cqrs.dll" target="lib\net40" />
+    <file src="bin\Release\Herms.Cqrs.Azure.dll" target="lib\net40" />
   </files>
 </package>

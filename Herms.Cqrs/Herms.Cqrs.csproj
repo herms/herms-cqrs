@@ -57,13 +57,12 @@
     <Compile Include="EventHandlerCollection.cs" />
     <Compile Include="EventHandlerResult.cs" />
     <Compile Include="EventHandlerResults.cs" />
-    <Compile Include="Event\Exceptions\EventVersionHigherThanExpectedException.cs" />
+    <Compile Include="Event\Exceptions\UnexpectedEventVersionException.cs" />
     <Compile Include="GenericArgumentExtractor.cs" />
     <Compile Include="IAggregateRepository.cs" />
     <Compile Include="IEventDispatcher.cs" />
     <Compile Include="IEventHandlerRegistry.cs" />
     <Compile Include="Command.cs" />
-    <Compile Include="Event\Exceptions\EventVersionLowerThanCurrentException.cs" />
     <Compile Include="Event\IEvent.cs" />
     <Compile Include="Event\VersionedEvent.cs" />
     <Compile Include="ICommandHandler.cs" />

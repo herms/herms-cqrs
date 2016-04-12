@@ -33,7 +33,7 @@ namespace Herms.Cqrs.Aggregate
         {
             versionedEvent.AggregateId = Id;
             versionedEvent.Version = Version;
-            versionedEvent.EventId = Guid.NewGuid();
+            versionedEvent.Id = Guid.NewGuid();
             versionedEvent.Timestamp = DateTime.UtcNow;
         }
 

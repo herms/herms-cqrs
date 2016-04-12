@@ -39,7 +39,7 @@ namespace Herms.Cqrs.Azure
             var batch = new TableBatchOperation();
             foreach (var @event in aggregate.GetChanges())
             {
-                var eventEntity = new EventEntity(@event.AggregateId.ToString(GuidStringFormat), @event.EventId.ToString(GuidStringFormat))
+                var eventEntity = new EventEntity(@event.AggregateId.ToString(GuidStringFormat), @event.Id.ToString(GuidStringFormat))
                 {
                     AggregateType = typeof (TAggregate).Name,
                     EventType = @event.GetType().FullName,

@@ -4,7 +4,7 @@ using Herms.Cqrs.Event;
 
 namespace Herms.Cqrs.Aggregate.Exceptions
 {
-    [DebuggerDisplay("{Aggregate.GetType().Name} <- {Event.GetType().Name} v{Event.Version} {Event.EventId}")]
+    [DebuggerDisplay("{Aggregate.GetType().Name} <- {Event.GetType().Name} v{Event.Version} {Event.Id}")]
     public class EventApplicationException : Exception
     {
         public IAggregate Aggregate { get; private set; }

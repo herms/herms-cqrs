@@ -5,14 +5,14 @@ using Herms.Cqrs.Event;
 
 namespace Herms.Cqrs
 {
-    public class EventHandlerBase<T>
+    public class EventHandlerBase<T> where T : IEventHandler
     {
         private static readonly List<Type> EventTypes;
         private readonly ILog _log;
 
         static EventHandlerBase()
         {
-            EventTypes = GenericArgumentExtractor.GetHandledEvents(typeof (T));
+            EventTypes = GenericArgumentExtractor.GetHandledEvents(typeof(T));
         }
 
         protected EventHandlerBase()

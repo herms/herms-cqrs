@@ -58,6 +58,7 @@
     <Compile Include="EventHandlerCollection.cs" />
     <Compile Include="EventHandlerResult.cs" />
     <Compile Include="EventHandlerResults.cs" />
+    <Compile Include="EventMappingRegistry.cs" />
     <Compile Include="Event\EventNameAttribute.cs" />
     <Compile Include="Event\Exceptions\UnexpectedEventVersionException.cs" />
     <Compile Include="GenericArgumentExtractor.cs" />

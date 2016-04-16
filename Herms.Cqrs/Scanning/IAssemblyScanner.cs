@@ -7,6 +7,7 @@ namespace Herms.Cqrs.Scanning
     {
         AssemblyScanResult ScanAssemblyForEventHandlers(Assembly assembly);
         AssemblyScanResult ScanAssemblyForCommandHandlers(Assembly assembly);
+        AssemblyScanResult ScanAssemblyForHandlers(Assembly assembly);
         AssemblyScanResult ScanAssembly(Assembly assembly);
     }
 }

@@ -24,6 +24,8 @@ namespace Herms.Cqrs.Azure.Tests
 
             _sut.Save(aggregate);
 
+            Task.Delay(50).Wait();
+
             var loadedAggregate = _sut.Get(aggregate.Id);
 
             Assert.NotNull(loadedAggregate);

@@ -33,20 +33,28 @@ namespace Herms.Cqrs.Scanning
             return result;
         }
 
+        public AssemblyScanResult ScanAssembly(Assembly assembly)
+        {
+            _log.Info($"Scanning assembly {assembly.GetName().Name} for command and event handlers.");
+            var assemblyScanResult = new AssemblyScanResult();
+            this.ScanAssembly(assembly, assemblyScanResult, AssemblyScanOptions.All);
+            return assemblyScanResult;
+        }
+
+        public AssemblyScanResult ScanAssemblyForHandlers(Assembly assembly)
+        {
+            _log.Info($"Scanning assembly {assembly.GetName().Name} for command and event handlers.");
+            var assemblyScanResult = new AssemblyScanResult();
+            this.ScanAssembly(assembly, assemblyScanResult, AssemblyScanOptions.AllHandlers);
+            return assemblyScanResult;
+        }
+
         public AssemblyScanResult ScanAssemblyForEvents(Assembly assembly)
         {
             _log.Info($"Scanning assembly {assembly.GetName().Name} for events.");
             var result = new AssemblyScanResult();
             this.ScanAssembly(assembly, result, AssemblyScanOptions.Events);
             return result;
-        }
-
-        public AssemblyScanResult ScanAssembly(Assembly assembly)
-        {
-            _log.Info($"Scanning assembly {assembly.GetName().Name} for command and event handlers.");
-            var assemblyScanResult = new AssemblyScanResult();
-            this.ScanAssembly(assembly, assemblyScanResult, AssemblyScanOptions.AllHandlers);
-            return assemblyScanResult;
         }
 
         private void ScanAssembly(Assembly assembly, AssemblyScanResult assemblyScanResult, AssemblyScanOptions options)
@@ -80,19 +88,12 @@ namespace Herms.Cqrs.Scanning
                 {
                     _log.Trace($"Scanning type {assemblyType.FullName} for event implementation.");
 
-                    var eventMappings = this.FindEvents(assemblyType);
-                    if (eventMappings.Any())
-                    {
-                        eventMappings.ForEach(em =>
-                        {
-                            if (!assemblyScanResult.EventMap.ContainsKey(em.EventName))
-                            {
-                                assemblyScanResult.EventMap.Add(em.EventName, em.EventType);
-                                if (!assemblyScanResult.Implementations.Contains(assemblyType))
-                                    assemblyScanResult.Implementations.Add(assemblyType);
-                            }
-                        });
-                    }
+                    var eventMapping = this.FindEventMapping(assemblyType);
+                    if (eventMapping == null) continue;
+                    if (assemblyScanResult.EventMap.ContainsKey(eventMapping.EventName)) continue;
+                    assemblyScanResult.EventMap.Add(eventMapping.EventName, eventMapping.EventType);
+                    if (!assemblyScanResult.Implementations.Contains(assemblyType))
+                        assemblyScanResult.Implementations.Add(assemblyType);
                 }
             }
             var commandHandlersFound = assemblyScanResult.CommandHandlers.Count;
@@ -109,7 +110,7 @@ namespace Herms.Cqrs.Scanning
             var handlers = new List<HandlerDefinition>();
             var handlersFoundInType = 0;
             var eventHandlers =
-                assemblyType.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEventHandler<>));
+                assemblyType.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEventHandler<>));
             var eventHandlerList = eventHandlers as IList<Type> ?? eventHandlers.ToList();
             if (!eventHandlerList.Any()) return handlers;
             if (assemblyType.IsPublic)
@@ -120,8 +121,8 @@ namespace Herms.Cqrs.Scanning
                     if (arguments.Length != 1 || arguments[0] == null)
                         throw new ArgumentException($"Generic argument was not found for handler {eventHandler.FullName}.");
                     var argument = arguments[0];
-                    if (!typeof (IEvent).IsAssignableFrom(argument))
-                        throw new ArgumentException($"Generic argument is not assignable from type {typeof (IEvent).FullName}.");
+                    if (!typeof(IEvent).IsAssignableFrom(argument))
+                        throw new ArgumentException($"Generic argument is not assignable from type {typeof(IEvent).FullName}.");
                     handlers.Add(new HandlerDefinition
                     {
                         Handler = eventHandler,
@@ -136,26 +137,21 @@ namespace Herms.Cqrs.Scanning
             return handlers;
         }
 
-        private List<EventMapping> FindEvents(Type assemblyType)
+        private EventMapping FindEventMapping(Type assemblyType)
         {
-            var mapping = new List<EventMapping>();
             var eventType = assemblyType.GetInterface(typeof(IEvent).FullName);
             if (eventType == null)
             {
-                _log.Warn($"Attempted to register mapping for an event that does not implement {nameof(IEvent)}.");
-                return mapping;
+                return null;
             }
             MemberInfo info = assemblyType;
             var attribute = info.GetCustomAttribute(typeof(EventNameAttribute)) as EventNameAttribute;
             if (attribute == null)
             {
-                mapping.Add(new EventMapping {EventName = assemblyType.Name, EventType = assemblyType});
+                _log.Trace("Registering");
+                return new EventMapping { EventName = assemblyType.Name, EventType = assemblyType };
             }
-            else
-            {
-                mapping.Add(new EventMapping {EventName = attribute.EventName, EventType = assemblyType});
-            }
-            return mapping;
+            return new EventMapping { EventName = attribute.EventName, EventType = assemblyType };
         }
 
         private List<HandlerDefinition> FindCommandHandlers(Type assemblyType)
@@ -164,7 +160,7 @@ namespace Herms.Cqrs.Scanning
             var handlersFoundInType = 0;
             var commandHandlers =
                 assemblyType.GetInterfaces()
-                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (ICommandHandler<>));
+                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>));
             var commandHandlerList = commandHandlers as IList<Type> ?? commandHandlers.ToList();
             if (!commandHandlerList.Any()) return handlers;
             if (assemblyType.IsPublic)
@@ -177,8 +173,8 @@ namespace Herms.Cqrs.Scanning
                         if (arguments.Length != 1 || arguments[0] == null)
                             throw new ArgumentException($"Generic argument was not found for handler {commandHandler.FullName}.");
                         var argument = arguments[0];
-                        if (!typeof (Command).IsAssignableFrom(argument))
-                            throw new ArgumentException($"Generic argument is not assignable from type {typeof (Command).FullName}.");
+                        if (!typeof(Command).IsAssignableFrom(argument))
+                            throw new ArgumentException($"Generic argument is not assignable from type {typeof(Command).FullName}.");
                         var handlerDefinition = new HandlerDefinition
                         {
                             Handler = commandHandler,
@@ -208,10 +204,15 @@ namespace Herms.Cqrs.Scanning
     [Flags]
     internal enum AssemblyScanOptions : short
     {
+        //0000001
         EventHandlers = 1,
+        //0000010
         CommandHandlers = 2,
+        //0000011
         AllHandlers = 3,
+        //0000100
         Events = 4,
-        All = 5
+        //0000111
+        All = 7
     }
 }

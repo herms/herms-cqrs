@@ -19,7 +19,7 @@ namespace Herms.Cqrs.Ninject.Tests
             var eventHandlerRegistry = new NinjectEventHandlerRegistry(kernel);
 
             var assemblyScanner = new AssemblyScanner();
-            var results = assemblyScanner.ScanAssembly(typeof (TestEvent1).Assembly);
+            var results = assemblyScanner.ScanAssemblyForHandlers(typeof (TestEvent1).Assembly);
             commandHandlerRegistry.Register(results.CommandHandlers);
             eventHandlerRegistry.Register(results.EventHandlers);
 

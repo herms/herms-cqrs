@@ -9,6 +9,7 @@
     <description>A small CQRS framework in its very very early stages.</description>
     <dependencies>
       <dependency id="Herms.Cqrs" version="[1.0,2.0]" />
+      <dependency id="Common.Logging" version="3.3.1" />
     </dependencies>
   </metadata>
   <files>

@@ -10,6 +10,7 @@
     <dependencies>
       <dependency id="Herms.Cqrs" version="[1.0,2.0]" />
       <dependency id="ninject" version="[3.2,)" />
+      <dependency id="Common.Logging" />
     </dependencies>
   </metadata>
   <files>

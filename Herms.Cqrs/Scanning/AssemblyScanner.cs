@@ -33,6 +33,14 @@ namespace Herms.Cqrs.Scanning
             return result;
         }
 
+        public AssemblyScanResult ScanAssemblyForEvents(Assembly assembly)
+        {
+            _log.Info($"Scanning assembly {assembly.GetName().Name} for events.");
+            var result = new AssemblyScanResult();
+            this.ScanAssembly(assembly, result, AssemblyScanOptions.Events);
+            return result;
+        }
+
         public AssemblyScanResult ScanAssembly(Assembly assembly)
         {
             _log.Info($"Scanning assembly {assembly.GetName().Name} for command and event handlers.");
@@ -68,13 +76,32 @@ namespace Herms.Cqrs.Scanning
                             assemblyScanResult.Implementations.Add(assemblyType);
                     }
                 }
+                if ((options & AssemblyScanOptions.Events) == AssemblyScanOptions.Events)
+                {
+                    _log.Trace($"Scanning type {assemblyType.FullName} for event implementation.");
+
+                    var eventMappings = this.FindEvents(assemblyType);
+                    if (eventMappings.Any())
+                    {
+                        eventMappings.ForEach(em =>
+                        {
+                            if (!assemblyScanResult.EventMap.ContainsKey(em.EventName))
+                            {
+                                assemblyScanResult.EventMap.Add(em.EventName, em.EventType);
+                                if (!assemblyScanResult.Implementations.Contains(assemblyType))
+                                    assemblyScanResult.Implementations.Add(assemblyType);
+                            }
+                        });
+                    }
+                }
             }
             var commandHandlersFound = assemblyScanResult.CommandHandlers.Count;
             var eventHandlersFound = assemblyScanResult.EventHandlers.Count;
             var typesWithHandlers = assemblyScanResult.Implementations.Count;
+            var eventMappingsFound = assemblyScanResult.EventMap.Count;
 
             _log.Info(
-                $"Assembly scan yielded {commandHandlersFound + eventHandlersFound} handlers ({commandHandlersFound} command, {eventHandlersFound} event) in {typesWithHandlers} types.");
+                $"Assembly scan yielded {commandHandlersFound + eventHandlersFound} handlers ({commandHandlersFound} command, {eventHandlersFound} event) and {eventMappingsFound} events in {typesWithHandlers} types.");
         }
 
         private List<HandlerDefinition> FindEventHandlers(Type assemblyType)
@@ -107,6 +134,28 @@ namespace Herms.Cqrs.Scanning
                     _log.Info($"Found {handlersFoundInType} event handlers in type {assemblyType.Name}");
             }
             return handlers;
+        }
+
+        private List<EventMapping> FindEvents(Type assemblyType)
+        {
+            var mapping = new List<EventMapping>();
+            var eventType = assemblyType.GetInterface(typeof(IEvent).FullName);
+            if (eventType == null)
+            {
+                _log.Warn($"Attempted to register mapping for an event that does not implement {nameof(IEvent)}.");
+                return mapping;
+            }
+            MemberInfo info = assemblyType;
+            var attribute = info.GetCustomAttribute(typeof(EventNameAttribute)) as EventNameAttribute;
+            if (attribute == null)
+            {
+                mapping.Add(new EventMapping {EventName = assemblyType.Name, EventType = assemblyType});
+            }
+            else
+            {
+                mapping.Add(new EventMapping {EventName = attribute.EventName, EventType = assemblyType});
+            }
+            return mapping;
         }
 
         private List<HandlerDefinition> FindCommandHandlers(Type assemblyType)
@@ -161,6 +210,8 @@ namespace Herms.Cqrs.Scanning
     {
         EventHandlers = 1,
         CommandHandlers = 2,
-        AllHandlers = 3
+        AllHandlers = 3,
+        Events = 4,
+        All = 5
     }
 }

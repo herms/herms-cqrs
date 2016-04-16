@@ -106,5 +106,18 @@ namespace Herms.Cqrs.Tests.Scanning
             Assert.Null(handlerForTestCommand2);
             Assert.Null(handlerForTestCommand3);
         }
+
+        [Fact]
+        public void GivenEventsInAssembly_WhenScanningForEvents_ThenEventsOnlyShouldBeRegistered()
+        {
+            var assemblyScanner = new AssemblyScanner();
+            var results = assemblyScanner.ScanAssemblyForEvents(typeof(TestEvent1).Assembly);
+
+            Assert.Equal(3, results.EventMap.Count);
+
+            Assert.True(results.EventMap.ContainsKey(nameof(TestEvent1)));
+            Assert.True(results.EventMap.ContainsKey(nameof(TestEvent2)));
+            Assert.True(results.EventMap.ContainsKey("NewNameForTestEvent3"));
+        }
     }
 }

@@ -58,6 +58,7 @@
     <Compile Include="EventHandlerCollection.cs" />
     <Compile Include="EventHandlerResult.cs" />
     <Compile Include="EventHandlerResults.cs" />
+    <Compile Include="Event\EventNameAttribute.cs" />
     <Compile Include="Event\Exceptions\UnexpectedEventVersionException.cs" />
     <Compile Include="GenericArgumentExtractor.cs" />
     <Compile Include="IAggregateRepository.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="ICommandSender.cs" />
     <Compile Include="IEventHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Registration\EventMapping.cs" />
     <Compile Include="Registration\HandlerDefinition.cs" />
     <Compile Include="Scanning\AssemblyScanResult.cs" />
     <Compile Include="Scanning\IAssemblyScanner.cs" />

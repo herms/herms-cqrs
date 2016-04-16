@@ -11,5 +11,6 @@ namespace Herms.Cqrs.Scanning
         public List<Type> Implementations { get; set; } = new List<Type>();
         public List<HandlerDefinition> EventHandlers { get; set; } = new List<HandlerDefinition>();
         public List<HandlerDefinition> CommandHandlers { get; set; } = new List<HandlerDefinition>();
+        public Dictionary<string, Type> EventMap { get; set; } = new Dictionary<string, Type>();
     }
 }

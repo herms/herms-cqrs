@@ -78,8 +78,7 @@ namespace Herms.Cqrs.Scanning
 
                     var eventMapping = this.FindEventMapping(assemblyType);
                     if (eventMapping == null) continue;
-                    if (assemblyScanResult.EventMap.ContainsKey(eventMapping.EventName)) continue;
-                    assemblyScanResult.EventMap.Add(eventMapping.EventName, eventMapping.EventType);
+                    assemblyScanResult.EventMap.Add(eventMapping);
                     if (!assemblyScanResult.Implementations.Contains(assemblyType))
                         assemblyScanResult.Implementations.Add(assemblyType);
                 }

@@ -81,9 +81,9 @@ namespace Herms.Cqrs.Tests.Scanning
 
             Assert.Equal(3, results.EventMap.Count);
 
-            Assert.True(results.EventMap.ContainsKey(nameof(TestEvent1)));
-            Assert.True(results.EventMap.ContainsKey(nameof(TestEvent2)));
-            Assert.True(results.EventMap.ContainsKey("NewNameForTestEvent3"));
+            Assert.NotNull(results.EventMap.FirstOrDefault(em => em.EventName.Equals(nameof(TestEvent1))));
+            Assert.NotNull(results.EventMap.FirstOrDefault(em => em.EventName.Equals(nameof(TestEvent2))));
+            Assert.NotNull(results.EventMap.FirstOrDefault(em => em.EventName.Equals("NewNameForTestEvent3")));
         }
 
         [Fact]
@@ -156,9 +156,9 @@ namespace Herms.Cqrs.Tests.Scanning
 
             Assert.Equal(3, results.EventMap.Count);
 
-            Assert.True(results.EventMap.ContainsKey(nameof(TestEvent1)));
-            Assert.True(results.EventMap.ContainsKey(nameof(TestEvent2)));
-            Assert.True(results.EventMap.ContainsKey("NewNameForTestEvent3"));
+            Assert.NotNull(results.EventMap.FirstOrDefault(em => em.EventName.Equals(nameof(TestEvent1))));
+            Assert.NotNull(results.EventMap.FirstOrDefault(em => em.EventName.Equals(nameof(TestEvent2))));
+            Assert.NotNull(results.EventMap.FirstOrDefault(em => em.EventName.Equals("NewNameForTestEvent3")));
 
             Assert.False(results.CommandHandlers.Any());
             Assert.False(results.EventHandlers.Any());

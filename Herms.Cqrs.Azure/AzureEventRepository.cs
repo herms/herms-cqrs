@@ -17,22 +17,14 @@ namespace Herms.Cqrs.Azure
         private readonly ILog _log;
         private CloudTable _table;
 
-        public AzureEventRepository(string connectionString, string tableName)
+        public AzureEventRepository(string connectionString, string tableName, bool clean)
         {
             _log = LogManager.GetLogger(typeof (AzureEventRepository<>));
             var storageAccount = CloudStorageAccount.Parse(connectionString);
-            this.CreateTableReference(tableName, storageAccount);
-        }
-
-        public AzureEventRepository(bool clean = false)
-        {
-            _log = LogManager.GetLogger(typeof (AzureEventRepository<>));
-            var storageAccount = CloudStorageAccount.DevelopmentStorageAccount;
-            var tableName = typeof (TAggregate).Name;
             this.CreateTableReference(tableName, storageAccount, clean);
         }
 
-        public AzureEventRepository(string connectionString) : this(connectionString, typeof (TAggregate).Name) {}
+        public AzureEventRepository(string connectionString) : this(connectionString, typeof (TAggregate).Name, false) {}
 
         public void Save(TAggregate aggregate)
         {

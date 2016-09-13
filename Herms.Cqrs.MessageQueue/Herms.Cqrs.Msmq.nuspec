@@ -1,0 +1,18 @@
+﻿<?xml version="1.0"?>
+
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Herms.Cqrs.Msmq</id>
+    <version>$version$</version>
+    <authors>Herman Crawfurd Svensen</authors>
+    <owners>Herman Crawfurd Svensen</owners>
+    <description>A small CQRS framework in its very very early stages.</description>
+    <dependencies>
+      <dependency id="Herms.Cqrs" version="[1.0,2.0]" />
+      <dependency id="Common.Logging" version="3.3.1" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\Herms.Cqrs.Msmq.dll" target="lib\net40" />
+  </files>
+</package>

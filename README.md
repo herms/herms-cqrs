@@ -40,6 +40,9 @@ Some place in your code, you will accept a `Command` of some type, and you must 
 ### ICommandHandler
 The `ICommandHandler` interface defines one method: `Handle`. In the handler you will get the aggregate, and change the aggregate according to the command. The `ICommandHandler` will need a `IEventDispatcher`.
 
+### IEvent
+...
+
 ### IEventDispatcher
 The `IEventDispatcher` defines the method `Publish`. There is no implementation of `IEventDispatcher` included in any of the packages yet, but this could be something that sends a message on a queue, writes a file, or whatever.
 
@@ -50,5 +53,11 @@ In the receiving end, you will need something that picks up published events. Th
 The `EventHandlerCollection` has a method `Handle` which will call `Handle` on every `IEventHandler` in the collection (regardless of the result of each one). The collective results will be presented in a `EventHandlerResults` object.
 
 ## Registration
+TBC
+TODO
 The core package contains a namespace that 
 The `herms.cqrs.ninject` package contains code that will with _one_ method call scan your assemblies for events, commands and handlers. 
+
+
+
+http://markdownlivepreview.com/

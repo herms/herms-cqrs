@@ -54,6 +54,7 @@
     <Compile Include="Aggregate\Exceptions\EventApplicationException.cs" />
     <Compile Include="Aggregate\IAggregate.cs" />
     <Compile Include="Aggregate\IEventSourced.cs" />
+    <Compile Include="Event\EventEnvelope.cs" />
     <Compile Include="EventHandlerBase.cs" />
     <Compile Include="EventHandlerCollection.cs" />
     <Compile Include="EventHandlerResult.cs" />

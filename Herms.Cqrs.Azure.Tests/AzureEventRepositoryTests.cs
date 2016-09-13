@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading.Tasks;
 using Herms.Cqrs.TestContext.Commands;
 using Herms.Cqrs.TestContext.Models;
@@ -12,7 +13,8 @@ namespace Herms.Cqrs.Azure.Tests
 
         public AzureEventRepositoryTests()
         {
-            _sut = new AzureEventRepository<TestAggregate>(true);
+            var connectionString = ConfigurationManager.AppSettings["StorageConnectionString"];
+            _sut = new AzureEventRepository<TestAggregate>(connectionString, typeof(TestAggregate).Name, true);
         }
 
         [Fact]

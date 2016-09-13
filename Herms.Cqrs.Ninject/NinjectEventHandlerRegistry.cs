@@ -12,6 +12,7 @@ namespace Herms.Cqrs.Ninject
     {
         private readonly IKernel _kernel;
         private readonly ILog _log;
+        private string CanHandleKey = "CanHandle";
 
         public NinjectEventHandlerRegistry(IKernel kernel)
         {
@@ -37,7 +38,7 @@ namespace Herms.Cqrs.Ninject
                 _kernel.Bind<IEventHandler>()
                     .To(implementationType)
                     .Named(this.CreateEventHandlerName(implementationType, eventType))
-                    .WithMetadata("CanHandle", eventType.Name);
+                    .WithMetadata(CanHandleKey, eventType.Name);
             }
             else
             {
@@ -55,7 +56,7 @@ namespace Herms.Cqrs.Ninject
 
         public EventHandlerCollection ResolveHandlers<T>(T eventType) where T : IEvent
         {
-            var handlers = _kernel.GetAll<IEventHandler>(m => m.Get<string>("CanHandle").Equals(eventType.GetType().Name));
+            var handlers = _kernel.GetAll<IEventHandler>(m => m.Get<string>(CanHandleKey).Equals(eventType.GetType().Name));
             return new EventHandlerCollection(handlers);
         }
 

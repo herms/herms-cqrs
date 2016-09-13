@@ -101,12 +101,4 @@ namespace Herms.Cqrs.File
             return _aggregateTypePath + "\\" + id.ToString("N");
         }
     }
-
-    [Serializable]
-    public class EventEnvelope
-    {
-        public string AssemblyName { get; set; }
-        public string EventType { get; set; }
-        public IEvent EventData { get; set; }
-    }
 }

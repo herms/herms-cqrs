@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Common.Logging;
 using Herms.Cqrs.Aggregate;
 using Herms.Cqrs.Aggregate.Exceptions;
@@ -21,12 +22,13 @@ namespace Herms.Cqrs.Azure
         {
             _log = LogManager.GetLogger(typeof (AzureEventRepository<>));
             var storageAccount = CloudStorageAccount.Parse(connectionString);
-            this.CreateTableReference(tableName, storageAccount, clean);
+            var createTableTask = this.CreateTableReference(tableName, storageAccount, clean);
+            createTableTask.Wait();
         }
 
         public AzureEventRepository(string connectionString) : this(connectionString, typeof (TAggregate).Name, false) {}
 
-        public void Save(TAggregate aggregate)
+        public async Task SaveAsync(TAggregate aggregate)
         {
             var batch = new TableBatchOperation();
             foreach (var @event in aggregate.GetChanges())
@@ -42,7 +44,7 @@ namespace Herms.Cqrs.Azure
                 var operation = TableOperation.Insert(eventEntity);
                 batch.Add(operation);
             }
-            var result = _table.ExecuteBatch(batch);
+            var result = await _table.ExecuteBatchAsync(batch);
             if (result.Any(IsNotSuccessStatus))
             {
                 _log.Fatal($"Error while saving events!");
@@ -51,6 +53,13 @@ namespace Herms.Cqrs.Azure
                     _log.Error($"HTTP {r.HttpStatusCode} for {r.Result}.");
                 }
             }
+        }
+
+
+        public void Save(TAggregate aggregate)
+        {
+            var saveTask = this.SaveAsync(aggregate);
+            saveTask.Wait();
         }
 
         public TAggregate Get(Guid id)
@@ -95,13 +104,14 @@ namespace Herms.Cqrs.Azure
             return typeFromEntity;
         }
 
-        private void CreateTableReference(string tableName, CloudStorageAccount storageAccount, bool clean = false)
+        private async Task CreateTableReference(string tableName, CloudStorageAccount storageAccount, bool clean = false)
         {
             var tableClient = storageAccount.CreateCloudTableClient();
             _table = tableClient.GetTableReference(tableName);
             if (clean)
-                _table.DeleteIfExists();
-            if (_table.CreateIfNotExists())
+                await _table.DeleteIfExistsAsync();
+            var created = await _table.CreateIfNotExistsAsync();
+            if (created)
                 _log.Info($"Created table {tableName}.");
         }
     }

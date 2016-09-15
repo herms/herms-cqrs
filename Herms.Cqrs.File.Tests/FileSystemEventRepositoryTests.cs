@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Herms.Cqrs.TestContext.Commands;
 using Herms.Cqrs.TestContext.Models;
 using Xunit;
@@ -17,6 +18,22 @@ namespace Herms.Cqrs.File.Tests
             Assert.Equal(2, testAggregate.Version);
 
             fileSystemEventRepo.Save(testAggregate);
+
+            var deserialized = fileSystemEventRepo.Get(testAggregate.Id);
+
+            Assert.Equal(2, deserialized.Version);
+        }
+
+        [Fact]
+        public async Task GivenEventSerializedAsync_WhenDeserialize_ThenItShouldBeDeserializedToCorrectType()
+        {
+            var fileSystemEventRepo = new FileSystemEventRepository<TestAggregate>();
+            var testAggregate = new TestAggregate();
+            testAggregate.InvokeCommand1(new TestCommand1());
+            testAggregate.InvokeCommand2(new TestCommand2());
+            Assert.Equal(2, testAggregate.Version);
+
+            await fileSystemEventRepo.SaveAsync(testAggregate);
 
             var deserialized = fileSystemEventRepo.Get(testAggregate.Id);
 

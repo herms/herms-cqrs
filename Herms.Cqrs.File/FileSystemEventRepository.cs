@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Common.Logging;
 using Herms.Cqrs.Aggregate;
 using Herms.Cqrs.Event;
@@ -13,21 +14,26 @@ namespace Herms.Cqrs.File
     public class FileSystemEventRepository<TAggregate> : IAggregateRepository<TAggregate>
         where TAggregate : IAggregate, IEventSourced, new()
     {
-        private readonly ILog _log;
         private readonly string _aggregateTypePath;
+        private readonly ILog _log;
 
         public FileSystemEventRepository()
         {
             // GetLogger(this.GetType()) produces a very long logger name. Using generic type instead.
             _log = LogManager.GetLogger(typeof(FileSystemEventRepository<>));
-            _aggregateTypePath = $"{Directory.GetCurrentDirectory()}\\{typeof (TAggregate).Name}";
+            _aggregateTypePath = $"{Directory.GetCurrentDirectory()}\\{typeof(TAggregate).Name}";
             _log.Debug($"Event store path is set to {_aggregateTypePath}.");
+        }
+
+        public async Task SaveAsync(TAggregate aggregate)
+        {
+            await Task.Run(() => this.Save(aggregate));
         }
 
         public void Save(TAggregate aggregate)
         {
             var events = aggregate.GetChanges().ToList();
-            _log.Info($"Saving {events.Count} new events for aggregate {aggregate.Id} of type {typeof (TAggregate).Name}.");
+            _log.Info($"Saving {events.Count} new events for aggregate {aggregate.Id} of type {typeof(TAggregate).Name}.");
             foreach (var @event in events)
             {
                 var envelope = new EventEnvelope
@@ -58,9 +64,9 @@ namespace Herms.Cqrs.File
         public TAggregate Get(Guid id)
         {
             if (!Directory.Exists(_aggregateTypePath))
-                throw new FileNotFoundException($"Could not find folder for aggregate type {typeof (TAggregate).Name}");
+                throw new FileNotFoundException($"Could not find folder for aggregate type {typeof(TAggregate).Name}");
             if (!Directory.Exists(this.GetAggregatePath(id)))
-                throw new FileNotFoundException($"Could not find folder for aggregate {id} of type {typeof (TAggregate).Name}");
+                throw new FileNotFoundException($"Could not find folder for aggregate {id} of type {typeof(TAggregate).Name}");
             var eventFiles = Directory.GetFiles(this.GetAggregatePath(id), "*.json").OrderBy(s => s);
             var events = new List<IEvent>();
             foreach (var eventFile in eventFiles)

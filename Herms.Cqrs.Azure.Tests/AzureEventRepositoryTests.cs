@@ -18,13 +18,13 @@ namespace Herms.Cqrs.Azure.Tests
         }
 
         [Fact]
-        public void GivenAggregateWithChanges_WhenSaving_ThenChangesShouldBePersisted()
+        public async Task GivenAggregateWithChanges_WhenSaving_ThenChangesShouldBePersisted()
         {
             var aggregate = new TestAggregate();
             aggregate.InvokeCommand1(new TestCommand1());
             aggregate.InvokeCommand2(new TestCommand2());
 
-            _sut.Save(aggregate);
+            await _sut.SaveAsync(aggregate);
 
             Task.Delay(50).Wait();
 
@@ -36,19 +36,19 @@ namespace Herms.Cqrs.Azure.Tests
         }
 
         [Fact]
-        public void GivenTwoAggregatesWithChanges_WhenSavingAndLoading_ThenTheEventsDontGetMixed()
+        public async Task GivenTwoAggregatesWithChanges_WhenSavingAndLoading_ThenTheEventsDontGetMixed()
         {
             var a1 = new TestAggregate();
             var a2 = new TestAggregate();
 
             a1.InvokeCommand1(new TestCommand1());
-            a1.InvokeCommand2(new TestCommand2 {Param1 = "A1-1"});
+            a1.InvokeCommand2(new TestCommand2 { Param1 = "A1-1" });
             a2.InvokeCommand1(new TestCommand1());
-            a1.InvokeCommand2(new TestCommand2 {Param1 = "A1-2"});
-            a2.InvokeCommand2(new TestCommand2 {Param1 = "A2-1"});
+            a1.InvokeCommand2(new TestCommand2 { Param1 = "A1-2" });
+            a2.InvokeCommand2(new TestCommand2 { Param1 = "A2-1" });
 
-            _sut.Save(a1);
-            _sut.Save(a2);
+            await _sut.SaveAsync(a1);
+            await _sut.SaveAsync(a2);
 
             Task.Delay(50).Wait();
 

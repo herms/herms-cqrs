@@ -22,16 +22,14 @@ namespace Herms.Cqrs.Azure
             var jObject = JsonConvert.DeserializeObject<JObject>(contents);
             var eventType = jObject[EventEnvelope.EventTypeField].Value<string>();
             var assemblyName = jObject[EventEnvelope.AssemblyNameField].Value<string>();
-            _log.Debug($"Read event of type {eventType}. Trying to deserialize...");
-            var type = Type.GetType(eventType + ", " + assemblyName, true);
-            _log.Trace(type.Name);
+            _log.Debug($"Read event of type {eventType}. Trying to deserialize to {assemblyName}.");
+            var type = Type.GetType(assemblyName, true);
             var payload = jObject[EventEnvelope.EventDataField].ToString();
-            _log.Trace(payload);
             var @event = (IEvent) JsonConvert.DeserializeObject(payload, type);
             return @event;
         }
 
-        public CloudQueueMessage SerializeEventToMessage(IEvent @event)
+        public static CloudQueueMessage SerializeEventToMessage(IEvent @event)
         {
             var envelope = new EventEnvelope
             {

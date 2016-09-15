@@ -70,7 +70,13 @@ namespace Herms.Cqrs.Azure
         private async Task InitializeQueue(string queueName)
         {
             _queue = _queueClient.GetQueueReference(queueName);
-            await _queue.CreateIfNotExistsAsync();
+            if (!await _queue.ExistsAsync())
+            {
+                _log.Info($"Creating queue {queueName}.");
+                await _queue.CreateIfNotExistsAsync();
+            }
+            else
+                _log.Debug($"Found queue {queueName}.");
         }
 
         private void ProcessMessage(CloudQueueMessage message)

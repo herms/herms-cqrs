@@ -9,22 +9,16 @@ namespace Herms.Cqrs.Azure
 {
     public class AzureStorageQueueDispatcher : IEventDispatcher
     {
-        private readonly CloudQueueMessageSerializer _cloudQueueMessageSerializer;
-        private readonly string _connectionString;
         private readonly ILog _log;
         private readonly CloudQueueClient _queueClient;
-        private readonly string _queueName;
         private CloudQueue _queue;
 
         public AzureStorageQueueDispatcher(string connectionString, string queueName)
         {
             _log = LogManager.GetLogger(this.GetType());
-            _connectionString = connectionString;
-            _queueName = queueName;
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
             _queueClient = storageAccount.CreateCloudQueueClient();
             var initializeQueueTask = this.InitializeQueue(queueName);
-            _cloudQueueMessageSerializer = new CloudQueueMessageSerializer();
             initializeQueueTask.Wait();
         }
 
@@ -38,12 +32,20 @@ namespace Herms.Cqrs.Azure
         {
             var message = CloudQueueMessageSerializer.SerializeEventToMessage(@event);
             await _queue.AddMessageAsync(message);
+            _log.Trace("Event published.");
         }
 
         private async Task InitializeQueue(string queueName)
         {
             _queue = _queueClient.GetQueueReference(queueName);
-            await _queue.CreateIfNotExistsAsync();
+            if (!await _queue.ExistsAsync())
+            {
+                _log.Info($"Creating queue {queueName}.");
+                await _queue.CreateIfNotExistsAsync();
+            }
+            else
+                _log.Debug($"Found queue {queueName}.");
         }
+
     }
 }

@@ -18,8 +18,7 @@ namespace Herms.Cqrs.Azure
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
             var queueClient = storageAccount.CreateCloudQueueClient();
             _log.Debug("Connected to storage account.");
-            var initializeQueueTask = this.InitializeQueue(queueClient, queueName);
-            initializeQueueTask.Wait();
+            var initializeQueueTask = Task.Run(async () => await this.InitializeQueue(queueClient, queueName));
             _queue = initializeQueueTask.Result;
         }
 

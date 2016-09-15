@@ -18,14 +18,14 @@ namespace Herms.Cqrs.Azure
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
             var queueClient = storageAccount.CreateCloudQueueClient();
             _log.Debug("Connected to storage account.");
-            var initializeQueueTask = Task.Run(async () => await this.InitializeQueue(queueClient, queueName));
-            _queue = initializeQueueTask.Result;
+            _queue = this.InitializeQueue(queueClient, queueName);
         }
 
         public void Publish(IEvent @event)
         {
-            var publishTask = this.PublishAsync(@event);
-            publishTask.Wait();
+            var message = CloudQueueMessageSerializer.SerializeEventToMessage(@event);
+            _queue.AddMessage(message);
+            _log.Trace("Event published.");
         }
 
         private async Task PublishAsync(IEvent @event)
@@ -35,13 +35,13 @@ namespace Herms.Cqrs.Azure
             _log.Trace("Event published.");
         }
 
-        private async Task<CloudQueue> InitializeQueue(CloudQueueClient cloudQueueClient, string queueName)
+        private CloudQueue InitializeQueue(CloudQueueClient cloudQueueClient, string queueName)
         {
             var queue = cloudQueueClient.GetQueueReference(queueName);
-            if (!await queue.ExistsAsync())
+            if (!queue.Exists())
             {
                 _log.Info($"Creating queue {queueName}.");
-                await queue.CreateIfNotExistsAsync();
+                queue.CreateIfNotExists();
             }
             else
                 _log.Debug($"Found queue {queueName}.");

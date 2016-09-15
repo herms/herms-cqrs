@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using Common.Logging;
 using Herms.Cqrs.Event;
-using Herms.Cqrs.Registration;
 using Herms.Cqrs.TestContext.Events;
 using Xunit;
 
@@ -23,55 +20,6 @@ namespace Herms.Cqrs.Tests
             Assert.Equal(2, eventHandlers.Count);
             var results = eventHandlers.Handle(testEvent1);
             Assert.Equal(EventHandlerResultType.HandlerFailed, results.Status);
-        }
-    }
-
-    public class PoorMansEventHandlerRegistry : IEventHandlerRegistry
-    {
-        private readonly Dictionary<Type, List<Type>> _registry = new Dictionary<Type, List<Type>>();
-        private readonly ILog _log;
-
-        public PoorMansEventHandlerRegistry()
-        {
-            _log = LogManager.GetLogger(this.GetType());
-        }
-
-        public void Register(Type eventHandler, Type implementationType)
-        {
-            _log.Debug($"Register event handler {eventHandler.Name} in {implementationType.Name}");
-            var genericArgument = eventHandler.GetGenericArguments()[0];
-            _log.Debug($"Event type: {genericArgument.Name}.");
-            List<Type> eventHandlers;
-            if (_registry.ContainsKey(genericArgument))
-            {
-                eventHandlers = _registry[genericArgument];
-            }
-            else
-            {
-                eventHandlers = new List<Type>();
-            }
-            eventHandlers.Add(implementationType);
-            _registry[genericArgument] = eventHandlers;
-        }
-
-        public void Register(IEnumerable<HandlerDefinition> handlerDefinitions)
-        {
-            foreach (var handlerDefinition in handlerDefinitions)
-            {
-                this.Register(handlerDefinition.Handler, handlerDefinition.Implementation);
-            }
-        }
-
-        public EventHandlerCollection ResolveHandlers<T>(T eventType) where T : IEvent
-        {
-            var eventHandlers = new List<IEventHandler>();
-            var handlers = _registry[typeof (T)];
-            foreach (var handler in handlers)
-            {
-                var eventHandler = (IEventHandler) Activator.CreateInstance(handler);
-                eventHandlers.Add(eventHandler);
-            }
-            return new EventHandlerCollection(eventHandlers);
         }
     }
 

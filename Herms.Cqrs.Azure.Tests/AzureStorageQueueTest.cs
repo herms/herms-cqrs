@@ -27,7 +27,8 @@ namespace Herms.Cqrs.Azure.Tests
             await Task.Delay(100);
 
             queueReceiver.Stop();
-            receiveTask.Wait();
+
+            await receiveTask;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Herms.Cqrs.Azure.Tests
 
             await _sut.SaveAsync(aggregate);
 
-            Task.Delay(50).Wait();
+            await Task.Delay(50);
 
             var loadedAggregate = _sut.Get(aggregate.Id);
 
@@ -47,10 +47,11 @@ namespace Herms.Cqrs.Azure.Tests
             a1.InvokeCommand2(new TestCommand2 { Param1 = "A1-2" });
             a2.InvokeCommand2(new TestCommand2 { Param1 = "A2-1" });
 
-            await _sut.SaveAsync(a1);
-            await _sut.SaveAsync(a2);
-
-            Task.Delay(50).Wait();
+            var t1 = _sut.SaveAsync(a1);
+            var t2 = _sut.SaveAsync(a2);
+            Task.WaitAll(new[] { t1, t2 });
+            
+            await Task.Delay(50);
 
             a1 = _sut.Get(a1.Id);
             a2 = _sut.Get(a2.Id);

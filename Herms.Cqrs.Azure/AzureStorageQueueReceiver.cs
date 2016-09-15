@@ -9,22 +9,20 @@ namespace Herms.Cqrs.Azure
 {
     public class AzureStorageQueueReceiver : IDisposable
     {
-        private readonly CloudQueueClient _queueClient;
         private readonly CloudQueueMessageSerializer _cloudQueueMessageSerializer;
+        private readonly string _connectionString;
+        private readonly string _queueName;
         private readonly IEventHandlerRegistry _eventHandlerRegistry;
         private readonly ILog _log;
         private CancellationTokenSource _cancellationTokenSource;
-        private CloudQueue _queue;
 
         public AzureStorageQueueReceiver(string connectionString, string queueName, IEventHandlerRegistry eventHandlerRegistry)
         {
             _log = LogManager.GetLogger(this.GetType());
+            _connectionString = connectionString;
+            _queueName = queueName;
             _eventHandlerRegistry = eventHandlerRegistry;
-            var storageAccount = CloudStorageAccount.Parse(connectionString);
-            _queueClient = storageAccount.CreateCloudQueueClient();
-            var initializeQueueTask = this.InitializeQueue(queueName);
             _cloudQueueMessageSerializer = new CloudQueueMessageSerializer();
-            initializeQueueTask.Wait();
         }
 
         public void Dispose()
@@ -34,14 +32,18 @@ namespace Herms.Cqrs.Azure
 
         public async Task Start()
         {
+            var storageAccount = CloudStorageAccount.Parse(_connectionString);
+            var queueClient = storageAccount.CreateCloudQueueClient();
+            _log.Debug("Connected to storage account.");
+            var queue = await this.InitializeQueue(queueClient, _queueName);
             _cancellationTokenSource = new CancellationTokenSource();
             while (!_cancellationTokenSource.IsCancellationRequested)
             {
                 try
                 {
-                    var message = await _queue.GetMessageAsync(_cancellationTokenSource.Token);
+                    var message = await queue.GetMessageAsync(_cancellationTokenSource.Token);
                     this.ProcessMessage(message);
-                    await _queue.DeleteMessageAsync(message, _cancellationTokenSource.Token);
+                    await queue.DeleteMessageAsync(message, _cancellationTokenSource.Token);
                 }
                 catch (TaskCanceledException tce)
                 {
@@ -67,16 +69,17 @@ namespace Herms.Cqrs.Azure
             _cancellationTokenSource?.Cancel();
         }
 
-        private async Task InitializeQueue(string queueName)
+        private async Task<CloudQueue> InitializeQueue(CloudQueueClient cloudQueueClient, string queueName)
         {
-            _queue = _queueClient.GetQueueReference(queueName);
-            if (!await _queue.ExistsAsync())
+            var queue = cloudQueueClient.GetQueueReference(queueName);
+            if (!await queue.ExistsAsync())
             {
                 _log.Info($"Creating queue {queueName}.");
-                await _queue.CreateIfNotExistsAsync();
+                await queue.CreateIfNotExistsAsync();
             }
             else
                 _log.Debug($"Found queue {queueName}.");
+            return queue;
         }
 
         private void ProcessMessage(CloudQueueMessage message)

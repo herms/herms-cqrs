@@ -10,16 +10,17 @@ namespace Herms.Cqrs.Azure
     public class AzureStorageQueueDispatcher : IEventDispatcher
     {
         private readonly ILog _log;
-        private readonly CloudQueueClient _queueClient;
-        private CloudQueue _queue;
+        private readonly CloudQueue _queue;
 
         public AzureStorageQueueDispatcher(string connectionString, string queueName)
         {
             _log = LogManager.GetLogger(this.GetType());
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
-            _queueClient = storageAccount.CreateCloudQueueClient();
-            var initializeQueueTask = this.InitializeQueue(queueName);
+            var queueClient = storageAccount.CreateCloudQueueClient();
+            _log.Debug("Connected to storage account.");
+            var initializeQueueTask = this.InitializeQueue(queueClient, queueName);
             initializeQueueTask.Wait();
+            _queue = initializeQueueTask.Result;
         }
 
         public void Publish(IEvent @event)
@@ -35,17 +36,17 @@ namespace Herms.Cqrs.Azure
             _log.Trace("Event published.");
         }
 
-        private async Task InitializeQueue(string queueName)
+        private async Task<CloudQueue> InitializeQueue(CloudQueueClient cloudQueueClient, string queueName)
         {
-            _queue = _queueClient.GetQueueReference(queueName);
-            if (!await _queue.ExistsAsync())
+            var queue = cloudQueueClient.GetQueueReference(queueName);
+            if (!await queue.ExistsAsync())
             {
                 _log.Info($"Creating queue {queueName}.");
-                await _queue.CreateIfNotExistsAsync();
+                await queue.CreateIfNotExistsAsync();
             }
             else
                 _log.Debug($"Found queue {queueName}.");
+            return queue;
         }
-
     }
 }

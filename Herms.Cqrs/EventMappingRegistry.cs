@@ -4,11 +4,21 @@ using Herms.Cqrs.Registration;
 
 namespace Herms.Cqrs
 {
-    public class EventMappingRegistry : Dictionary<string, Type>, IEventMappingRegistry
+    public class EventMappingRegistry : IEventMappingRegistry
     {
+        private readonly Dictionary<string, Type> _eventNameToType;
+        private readonly Dictionary<Type, string> _eventTypeToName;
+
+        public EventMappingRegistry()
+        {
+            _eventTypeToName = new Dictionary<Type, string>();
+            _eventNameToType = new Dictionary<string, Type>();
+        }
+
         public void Register(EventMapping eventMapping)
         {
-            this.Add(eventMapping.EventName, eventMapping.EventType);
+            _eventNameToType.Add(eventMapping.EventName, eventMapping.EventType);
+            _eventTypeToName.Add(eventMapping.EventType, eventMapping.EventName);
         }
 
         public void Register(IEnumerable<EventMapping> eventMappings)
@@ -21,7 +31,12 @@ namespace Herms.Cqrs
 
         public Type ResolveEventType(string name)
         {
-            return this[name];
+            return _eventNameToType[name];
+        }
+
+        public string ResolveEventName(Type type)
+        {
+            return _eventTypeToName[type];
         }
     }
 }

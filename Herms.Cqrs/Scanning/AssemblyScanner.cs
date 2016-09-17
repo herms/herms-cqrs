@@ -147,8 +147,11 @@ namespace Herms.Cqrs.Scanning
             }
             MemberInfo info = assemblyType;
             var attribute = info.GetCustomAttribute(typeof(EventNameAttribute)) as EventNameAttribute;
-            var mapping = new EventMapping { EventType = assemblyType };
-            mapping.EventName = attribute == null ? assemblyType.Name : attribute.EventName;
+            var mapping = new EventMapping
+            {
+                EventType = assemblyType,
+                EventName = attribute?.EventName ?? assemblyType.Name
+            };
             _log.Trace($"Mapping event name {mapping.EventName} to type {mapping.EventType}.");
             return mapping;
         }

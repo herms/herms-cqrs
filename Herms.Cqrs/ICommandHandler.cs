@@ -2,9 +2,7 @@
 
 namespace Herms.Cqrs
 {
-    public interface ICommandHandler {}
-
-    public interface ICommandHandler<in T> : ICommandHandler where T : Command
+    public interface ICommandHandler<in T> where T : Command
     {
         void Handle(T command);
     }

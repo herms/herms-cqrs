@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Configuration;
 using System.Threading.Tasks;
+using Herms.Cqrs.Registration;
 using Herms.Cqrs.TestContext.Commands;
+using Herms.Cqrs.TestContext.Events;
 using Herms.Cqrs.TestContext.Models;
 using Xunit;
 
@@ -14,7 +16,11 @@ namespace Herms.Cqrs.Azure.Tests
         public AzureEventRepositoryTests()
         {
             var connectionString = ConfigurationManager.AppSettings["StorageConnectionString"];
-            _sut = new AzureEventRepository<TestAggregate>(connectionString, typeof(TestAggregate).Name, true);
+            var eventMappingRegistry = new EventMappingRegistry();
+            eventMappingRegistry.Register(new EventMapping {EventName = typeof(TestEvent1).FullName, EventType = typeof(TestEvent1)});
+            eventMappingRegistry.Register(new EventMapping {EventName = typeof(TestEvent2).FullName, EventType = typeof(TestEvent2)});
+            eventMappingRegistry.Register(new EventMapping {EventName = typeof(TestEvent3).FullName, EventType = typeof(TestEvent3)});
+            _sut = new AzureEventRepository<TestAggregate>(connectionString, typeof(TestAggregate).Name, true, eventMappingRegistry);
         }
 
         [Fact]

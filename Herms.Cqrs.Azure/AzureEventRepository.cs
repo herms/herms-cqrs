@@ -14,30 +14,43 @@ namespace Herms.Cqrs.Azure
 {
     public class AzureEventRepository<TAggregate> : IAggregateRepository<TAggregate> where TAggregate : IAggregate, IEventSourced, new()
     {
-        private readonly string GuidStringFormat = "D";
+        private readonly IEventMappingRegistry _eventMappingRegistry;
         private readonly ILog _log;
+        private readonly string GuidStringFormat = "D";
         private CloudTable _table;
 
         public AzureEventRepository(string connectionString, string tableName, bool clean)
         {
-            _log = LogManager.GetLogger(typeof (AzureEventRepository<>));
+            _log = LogManager.GetLogger(typeof(AzureEventRepository<>));
             var storageAccount = CloudStorageAccount.Parse(connectionString);
             var createTableTask = this.CreateTableReference(tableName, storageAccount, clean);
             createTableTask.Wait();
         }
 
-        public AzureEventRepository(string connectionString) : this(connectionString, typeof (TAggregate).Name, false) {}
+        public AzureEventRepository(string connectionString, IEventMappingRegistry eventMappingRegistry)
+            : this(connectionString, typeof(TAggregate).Name, false, eventMappingRegistry) {}
+
+        public AzureEventRepository(string connectionString, string tableName, bool clean, IEventMappingRegistry eventMappingRegistry)
+        {
+            _eventMappingRegistry = eventMappingRegistry;
+            _log = LogManager.GetLogger(typeof(AzureEventRepository<>));
+            var storageAccount = CloudStorageAccount.Parse(connectionString);
+            var createTableTask = this.CreateTableReference(tableName, storageAccount, clean);
+            createTableTask.Wait();
+        }
+
+        public AzureEventRepository(string connectionString) : this(connectionString, typeof(TAggregate).Name, false) {}
 
         public async Task SaveAsync(TAggregate aggregate)
         {
             var batch = new TableBatchOperation();
             foreach (var @event in aggregate.GetChanges())
             {
+                var eventName = GetEventName(@event);
                 var eventEntity = new EventEntity(@event.AggregateId.ToString(GuidStringFormat), @event.Id.ToString(GuidStringFormat))
                 {
-                    AggregateType = typeof (TAggregate).Name,
-                    EventType = @event.GetType().FullName,
-                    AssemblyName = @event.GetType().Assembly.GetName().Name,
+                    AggregateType = typeof(TAggregate).Name,
+                    EventName = eventName,
                     Version = @event.Version,
                     Payload = JsonConvert.SerializeObject(@event)
                 };
@@ -55,6 +68,14 @@ namespace Herms.Cqrs.Azure
             }
         }
 
+        private string GetEventName(IEvent @event)
+        {
+            if (_eventMappingRegistry != null)
+            {
+                return _eventMappingRegistry.ResolveEventName(@event.GetType());
+            }
+            return @event.GetType().FullName;
+        }
 
         public void Save(TAggregate aggregate)
         {
@@ -95,13 +116,7 @@ namespace Herms.Cqrs.Azure
 
         private Type GetTypeFromEntity(EventEntity eventEntity)
         {
-            var fullyQualifiedTypeName = $"{eventEntity.EventType}, {eventEntity.AssemblyName}";
-            if (_log.IsTraceEnabled)
-                _log.Trace($"Trying to get type by name: {fullyQualifiedTypeName}");
-            var typeFromEntity = Type.GetType(fullyQualifiedTypeName);
-            if (typeFromEntity == null)
-                _log.Warn($"Could not find type {fullyQualifiedTypeName}");
-            return typeFromEntity;
+            return _eventMappingRegistry.ResolveEventType(eventEntity.EventName);
         }
 
         private async Task CreateTableReference(string tableName, CloudStorageAccount storageAccount, bool clean = false)
@@ -118,14 +133,12 @@ namespace Herms.Cqrs.Azure
 
     public class EventEntity : TableEntity
     {
-        public string AggregateType { get; set; }
-        public string EventType { get; set; }
-        public string AssemblyName { get; set; }
-        public int Version { get; set; }
-        public string Payload { get; set; }
-
         public EventEntity(string partitionKey, string rowKey) : base(partitionKey, rowKey) {}
 
         public EventEntity() {}
+        public string AggregateType { get; set; }
+        public string EventName { get; set; }
+        public int Version { get; set; }
+        public string Payload { get; set; }
     }
 }

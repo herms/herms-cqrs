@@ -25,14 +25,14 @@ namespace Herms.Cqrs.Azure
         {
             var message = CloudQueueMessageSerializer.SerializeEventToMessage(@event);
             _queue.AddMessage(message);
-            _log.Trace("Event published.");
+            _log.Trace($"Event {@event.Id} published.");
         }
 
         private async Task PublishAsync(IEvent @event)
         {
             var message = CloudQueueMessageSerializer.SerializeEventToMessage(@event);
             await _queue.AddMessageAsync(message);
-            _log.Trace("Event published.");
+            _log.Trace($"Event {@event.Id} published.");
         }
 
         private CloudQueue InitializeQueue(CloudQueueClient cloudQueueClient, string queueName)

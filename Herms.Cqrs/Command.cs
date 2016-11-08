@@ -4,6 +4,12 @@ namespace Herms.Cqrs
 {
     public class Command
     {
+        public Command(Guid aggregateId)
+        {
+            AggregateId = aggregateId;
+            CommandId = Guid.NewGuid();
+        }
+
         protected Command(Guid aggregateId, Guid commandId, Guid? correlationId = null)
         {
             AggregateId = aggregateId;

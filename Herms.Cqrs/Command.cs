@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Herms.Cqrs
 {
@@ -20,5 +21,14 @@ namespace Herms.Cqrs
         public Guid CommandId { get; private set; }
         public Guid? CorrelationId { get; set; }
         public Guid AggregateId { get; private set; }
+
+        public static void Correlate(IEnumerable<Command> commands)
+        {
+            var correlationId = Guid.NewGuid();
+            foreach (var command in commands)
+            {
+                command.CorrelationId  = correlationId;
+            }
+        }
     }
 }

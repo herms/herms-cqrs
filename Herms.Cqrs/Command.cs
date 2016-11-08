@@ -18,7 +18,7 @@ namespace Herms.Cqrs
         }
 
         public Guid CommandId { get; private set; }
-        public Guid? CorrelationId { get; private set; }
+        public Guid? CorrelationId { get; set; }
         public Guid AggregateId { get; private set; }
     }
 }

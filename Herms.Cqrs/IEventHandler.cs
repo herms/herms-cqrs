@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Herms.Cqrs.Event;
 
 namespace Herms.Cqrs
 {
     public interface IEventHandler<in T> where T : IEvent
     {
-        EventHandlerResult Handle(T @event);
+        Task<EventHandlerResult> HandleAsync(T @event);
     }
 
     public interface IEventHandler
     {
-        EventHandlerResult Handle(IEvent @event);
+        Task<EventHandlerResult> HandleAsync(IEvent @event);
         bool CanHandle(IEvent @event);
     }
 }

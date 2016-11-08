@@ -11,9 +11,9 @@ namespace Herms.Cqrs.Azure
     {
         private readonly CloudQueueMessageSerializer _cloudQueueMessageSerializer;
         private readonly string _connectionString;
-        private readonly string _queueName;
         private readonly IEventHandlerRegistry _eventHandlerRegistry;
         private readonly ILog _log;
+        private readonly string _queueName;
         private CancellationTokenSource _cancellationTokenSource;
 
         public AzureStorageQueueReceiver(string connectionString, string queueName, IEventHandlerRegistry eventHandlerRegistry)
@@ -42,7 +42,7 @@ namespace Herms.Cqrs.Azure
                 try
                 {
                     var message = await queue.GetMessageAsync(_cancellationTokenSource.Token);
-                    this.ProcessMessage(message);
+                    await this.ProcessMessage(message);
                     await queue.DeleteMessageAsync(message, _cancellationTokenSource.Token);
                 }
                 catch (TaskCanceledException tce)
@@ -82,13 +82,13 @@ namespace Herms.Cqrs.Azure
             return queue;
         }
 
-        private void ProcessMessage(CloudQueueMessage message)
+        private async Task ProcessMessage(CloudQueueMessage message)
         {
             var @event = _cloudQueueMessageSerializer.DeserializeMessageToEvent(message);
 
             _log.Debug($"Message of type {@event.GetType()} received!");
             var eventHandlerCollection = _eventHandlerRegistry.ResolveHandlers(@event);
-            var results = eventHandlerCollection.Handle(@event);
+            var results = await eventHandlerCollection.HandleAsync(@event);
             if (results.Status != EventHandlerResultType.Success)
             {
                 if (results.Status == EventHandlerResultType.Error)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Herms.Cqrs.Event;
 
 namespace Herms.Cqrs
@@ -16,23 +17,27 @@ namespace Herms.Cqrs
             _eventHandlers = eventHandlers;
         }
 
-        public EventHandlerResults Handle(IEvent @event)
+        public async Task<EventHandlerResults> HandleAsync(IEvent @event)
         {
             var results = new EventHandlerResults();
             try
             {
+                var eventHandleTasks = new List<Task>();
                 foreach (var eventHandler in _eventHandlers)
                 {
-                    try
+                    var task = eventHandler.HandleAsync(@event).ContinueWith(p =>
                     {
-                        var eventHandlerResult = eventHandler.Handle(@event);
-                        results.Add(eventHandlerResult);
-                    }
-                    catch (Exception exception)
-                    {
-                        results.Add(EventHandlerResult.CreateFailureResult(eventHandler.GetType(), exception));
-                    }
+                        if (p.IsFaulted)
+                        {
+                            var exception = p.Exception?.InnerException ?? p.Exception;
+                            results.Add(EventHandlerResult.CreateFailureResult(eventHandler.GetType(), exception));
+                        }
+                        else
+                            results.Add(p.Result);
+                    });
+                    eventHandleTasks.Add(task);
                 }
+                await Task.WhenAll(eventHandleTasks.ToArray());
             }
             catch (Exception exception)
             {

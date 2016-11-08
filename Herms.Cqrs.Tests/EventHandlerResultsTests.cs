@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Herms.Cqrs.Event;
 using Herms.Cqrs.TestContext.Events;
 using Xunit;
@@ -8,7 +9,7 @@ namespace Herms.Cqrs.Tests
     public class EventHandlerResultsTests
     {
         [Fact]
-        public void GivenMultipleHandlersOneOfWhichThrowsException_WhenHandlingEvent_ThenResultStatusShouldBeHandlerFailure()
+        public async Task GivenMultipleHandlersOneOfWhichThrowsException_WhenHandlingEvent_ThenResultStatusShouldBeHandlerFailure()
         {
             var eventHandlerRegistry = new PoorMansEventHandlerRegistry();
             eventHandlerRegistry.Register(typeof (IEventHandler<TestEvent1>), typeof (NegativeEventHandler));
@@ -18,17 +19,17 @@ namespace Herms.Cqrs.Tests
             var eventHandlers = eventHandlerRegistry.ResolveHandlers(testEvent1);
 
             Assert.Equal(2, eventHandlers.Count);
-            var results = eventHandlers.Handle(testEvent1);
+            var results = await eventHandlers.HandleAsync(testEvent1);
             Assert.Equal(EventHandlerResultType.HandlerFailed, results.Status);
         }
     }
 
     public class NegativeEventHandler : IEventHandler, IEventHandler<TestEvent1>, IEventHandler<TestEvent2>
     {
-        public EventHandlerResult Handle(IEvent @event)
+        public async Task<EventHandlerResult> HandleAsync(IEvent @event)
         {
             if (this.CanHandle(@event))
-                return Handle((dynamic) @event);
+                return await HandleAsync((dynamic) @event);
             throw new ArgumentException($"Can not handle events of type {@event.GetType().Name}.");
         }
 
@@ -41,20 +42,20 @@ namespace Herms.Cqrs.Tests
             return false;
         }
 
-        public EventHandlerResult Handle(TestEvent1 @event)
+        public Task<EventHandlerResult> HandleAsync(TestEvent1 @event)
         {
             throw new NotImplementedException("How do you like that?");
         }
 
-        public EventHandlerResult Handle(TestEvent2 @event)
+        public Task<EventHandlerResult> HandleAsync(TestEvent2 @event)
         {
-            return new EventHandlerResult { HandlerName = this.GetType().Name };
+            return Task.FromResult(new EventHandlerResult { HandlerName = this.GetType().Name });
         }
     }
 
     public class PositiveEventHandler : IEventHandler, IEventHandler<TestEvent1>
     {
-        public EventHandlerResult Handle(IEvent @event)
+        public Task<EventHandlerResult> HandleAsync(IEvent @event)
         {
             throw new NotImplementedException();
         }
@@ -64,9 +65,9 @@ namespace Herms.Cqrs.Tests
             throw new NotImplementedException();
         }
 
-        public EventHandlerResult Handle(TestEvent1 @event)
+        public Task<EventHandlerResult> HandleAsync(TestEvent1 @event)
         {
-            return EventHandlerResult.CreateSuccessResult(this.GetType());
+            return Task.FromResult(EventHandlerResult.CreateSuccessResult(this.GetType()));
         }
     }
 }

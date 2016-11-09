@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Common.Logging;
 using Herms.Cqrs.Event;
 using Herms.Cqrs.TestContext.Events;
@@ -15,10 +16,10 @@ namespace Herms.Cqrs.TestContext.EventHandlers
             _log = LogManager.GetLogger(this.GetType());
         }
 
-        public EventHandlerResult Handle(IEvent @event)
+        public Task<EventHandlerResult> HandleAsync(IEvent @event)
         {
             if (this.CanHandle(@event))
-                return Handle((dynamic) @event);
+                return HandleAsync((dynamic) @event);
             throw new ArgumentException($"Can not handle event of type {@event.GetType().Name}.");
         }
 
@@ -27,16 +28,16 @@ namespace Herms.Cqrs.TestContext.EventHandlers
             return base.CanHandle(@event, this.GetType());
         }
 
-        public EventHandlerResult Handle(TestEvent2 @event)
+        public Task<EventHandlerResult> HandleAsync(TestEvent2 @event)
         {
             _log.Debug($"{this.GetType().Name} handling {@event.GetType().Name}");
-            return new EventHandlerResult();
+            return Task.FromResult(new EventHandlerResult());
         }
 
-        public EventHandlerResult Handle(TestEvent3 @event)
+        public Task<EventHandlerResult> HandleAsync(TestEvent3 @event)
         {
             _log.Debug($"{this.GetType().Name} handling {@event.GetType().Name}");
-            return new EventHandlerResult();
+            return Task.FromResult(new EventHandlerResult());
         }
     }
 }

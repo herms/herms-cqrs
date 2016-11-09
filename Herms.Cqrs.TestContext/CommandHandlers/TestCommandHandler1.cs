@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Common.Logging;
 using Herms.Cqrs.TestContext.Commands;
 
@@ -13,9 +14,10 @@ namespace Herms.Cqrs.TestContext.CommandHandlers
             _log = LogManager.GetLogger(this.GetType());
         }
 
-        public void Handle(TestCommand1 command)
+        public Task HandleAsync(TestCommand1 command)
         {
             _log.Debug($"{this.GetType().Name} handling {command.GetType().Name}");
+            return Task.CompletedTask;
         }
     }
 }

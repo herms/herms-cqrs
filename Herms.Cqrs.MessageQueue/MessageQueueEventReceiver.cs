@@ -91,7 +91,7 @@ namespace Herms.Cqrs.Msmq
             _queue.Formatter = new BinaryMessageFormatter();
         }
 
-        private void ReadMessageQueue()
+        private async Task ReadMessageQueue()
         {
             _log.Info($"Waiting for message on queue {_queue.QueueName}...");
             while (_queue.CanRead && !_cancellationTokenSource.Token.IsCancellationRequested)
@@ -104,7 +104,7 @@ namespace Herms.Cqrs.Msmq
                         var payload = (IEvent) message.Body;
                         _log.Debug($"Message of type {payload.GetType()} received!");
                         var eventHandlerCollection = _eventHandlerRegistry.ResolveHandlers(payload);
-                        var results = eventHandlerCollection.Handle(payload);
+                        var results = await eventHandlerCollection.HandleAsync(payload);
                         if (results.Status != EventHandlerResultType.Success)
                         {
                             if (results.Status == EventHandlerResultType.Error)

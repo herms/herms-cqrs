@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Herms.Cqrs
 {
     public interface ICommandHandler<in T> where T : Command
     {
-        void Handle(T command);
+        Task HandleAsync(T command);
     }
 }

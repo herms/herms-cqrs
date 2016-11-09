@@ -42,7 +42,7 @@ namespace Herms.Cqrs.Azure
                 try
                 {
                     var message = await queue.GetMessageAsync(_cancellationTokenSource.Token);
-                    await this.ProcessMessage(message);
+                    await this.ProcessMessageAsync(message);
                     await queue.DeleteMessageAsync(message, _cancellationTokenSource.Token);
                 }
                 catch (TaskCanceledException tce)
@@ -82,7 +82,7 @@ namespace Herms.Cqrs.Azure
             return queue;
         }
 
-        private async Task ProcessMessage(CloudQueueMessage message)
+        private async Task ProcessMessageAsync(CloudQueueMessage message)
         {
             var @event = _cloudQueueMessageSerializer.DeserializeMessageToEvent(message);
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Common.Logging;
 using Herms.Cqrs.Event;
 
 namespace Herms.Cqrs
@@ -9,13 +10,19 @@ namespace Herms.Cqrs
     public class EventHandlerCollection
     {
         private readonly IEnumerable<IEventHandler> _eventHandlers;
+        private readonly ILog _log;
 
-        public int Count => _eventHandlers.Count();
+        public EventHandlerCollection()
+        {
+            _log = LogManager.GetLogger(this.GetType());
+        }
 
         public EventHandlerCollection(IEnumerable<IEventHandler> eventHandlers)
         {
             _eventHandlers = eventHandlers;
         }
+
+        public int Count => _eventHandlers.Count();
 
         public async Task<EventHandlerResults> HandleAsync(IEvent @event)
         {
@@ -25,17 +32,30 @@ namespace Herms.Cqrs
                 var eventHandleTasks = new List<Task>();
                 foreach (var eventHandler in _eventHandlers)
                 {
-                    var task = eventHandler.HandleAsync(@event).ContinueWith(p =>
+                    try
                     {
-                        if (p.IsFaulted)
-                        {
-                            var exception = p.Exception?.InnerException ?? p.Exception;
-                            results.Add(EventHandlerResult.CreateFailureResult(eventHandler.GetType(), exception));
-                        }
-                        else
-                            results.Add(p.Result);
-                    });
-                    eventHandleTasks.Add(task);
+                        eventHandleTasks.Add(eventHandler.HandleAsync(@event)
+                            .ContinueWith(p =>
+                            {
+                                try
+                                {
+                                    results.Add(p.Result);
+                                }
+                                catch (Exception ex)
+                                {
+                                    var rootException = ex;
+                                    var aggregateException = ex as AggregateException;
+                                    if (aggregateException?.InnerException != null)
+                                        rootException = aggregateException.InnerException;
+                                    results.Add(EventHandlerResult.CreateFailureResult(eventHandler.GetType(), rootException));
+                                }
+                            }));
+                        //eventHandleTasks.Add(handleAsync);
+                    }
+                    catch (AggregateException ae)
+                    {
+                        results.Add(EventHandlerResult.CreateFailureResult(eventHandler.GetType(), ae.GetBaseException()));
+                    }
                 }
                 await Task.WhenAll(eventHandleTasks.ToArray());
             }

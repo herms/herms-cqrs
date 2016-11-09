@@ -21,6 +21,8 @@ namespace Herms.Cqrs.Tests
             Assert.Equal(2, eventHandlers.Count);
             var results = await eventHandlers.HandleAsync(testEvent1);
             Assert.Equal(EventHandlerResultType.HandlerFailed, results.Status);
+            Assert.Equal(2, results.Items.Count);
+            Assert.Equal(1, results.Failed.Count);
         }
     }
 
@@ -55,14 +57,18 @@ namespace Herms.Cqrs.Tests
 
     public class PositiveEventHandler : IEventHandler, IEventHandler<TestEvent1>
     {
-        public Task<EventHandlerResult> HandleAsync(IEvent @event)
+        public async Task<EventHandlerResult> HandleAsync(IEvent @event)
         {
-            throw new NotImplementedException();
+            if (this.CanHandle(@event))
+                return await HandleAsync((dynamic)@event);
+            throw new ArgumentException($"Can not handle events of type {@event.GetType().Name}.");
         }
 
         public bool CanHandle(IEvent @event)
         {
-            throw new NotImplementedException();
+            if (@event is TestEvent1)
+                return true;
+            return false;
         }
 
         public Task<EventHandlerResult> HandleAsync(TestEvent1 @event)

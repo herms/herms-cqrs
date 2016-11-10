@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregate\AggregateBase.cs" />
+    <Compile Include="Aggregate\AggregateExtensions.cs" />
     <Compile Include="Aggregate\EventSourcedAggregateBase.cs" />
     <Compile Include="Aggregate\AggregateLoader.cs" />
     <Compile Include="Aggregate\Exceptions\AggregateLoadingException.cs" />

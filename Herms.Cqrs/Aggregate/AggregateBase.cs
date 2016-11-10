@@ -1,4 +1,5 @@
 ﻿using System;
+using Herms.Cqrs.Aggregate.Exceptions;
 
 namespace Herms.Cqrs.Aggregate
 {

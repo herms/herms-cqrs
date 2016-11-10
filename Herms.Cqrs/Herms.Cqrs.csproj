@@ -53,6 +53,7 @@
     <Compile Include="Aggregate\AggregateLoader.cs" />
     <Compile Include="Aggregate\Exceptions\AggregateLoadingException.cs" />
     <Compile Include="Aggregate\Exceptions\AggregateNotFoundException.cs" />
+    <Compile Include="Aggregate\Exceptions\AggregateUniquenessException.cs" />
     <Compile Include="Aggregate\Exceptions\EventApplicationException.cs" />
     <Compile Include="Aggregate\Exceptions\AggregateModelException.cs" />
     <Compile Include="Aggregate\IAggregate.cs" />

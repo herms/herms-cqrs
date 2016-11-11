@@ -25,11 +25,18 @@ namespace Herms.Cqrs.Azure.Tests
 
             var queueReceiver = new AzureStorageQueueReceiver(queueConfiguration, eventHandlerRegistry);
 
-            var queueDispatcher = new AzureStorageQueueDispatcher(storageConnectionString, queueName);
+            var queueDispatcher = new AzureStorageQueueDispatcher(queueConfiguration);
 
             queueReceiver.Start();
 
-            await queueDispatcher.PublishAsync(new TestEvent1 {AggregateId = Guid.NewGuid(), Id =  Guid.NewGuid(), Timestamp = DateTime.UtcNow, Version = 1});
+            await
+                queueDispatcher.PublishAsync(new TestEvent1
+                {
+                    AggregateId = Guid.NewGuid(),
+                    Id = Guid.NewGuid(),
+                    Timestamp = DateTime.UtcNow,
+                    Version = 1
+                });
 
             await Task.Delay(100);
 

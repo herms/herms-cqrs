@@ -15,11 +15,14 @@ namespace Herms.Cqrs.Azure
         private CloudQueue _queue;
         private bool _queueInitialized;
 
-        public AzureStorageQueueDispatcher(string connectionString, string queueName)
+        public AzureStorageQueueDispatcher(AzureStorageQueueConfiguration queueConfiguration)
         {
-            _queueName = queueName;
+            if (queueConfiguration == null)
+                throw new ArgumentNullException(nameof(queueConfiguration));
+
+            _queueName = queueConfiguration.QueueName;
             _log = LogManager.GetLogger(this.GetType());
-            var storageAccount = CloudStorageAccount.Parse(connectionString);
+            var storageAccount = CloudStorageAccount.Parse(queueConfiguration.ConnectionString);
             _queueClient = storageAccount.CreateCloudQueueClient();
             _log.Debug("Connected to storage account.");
         }

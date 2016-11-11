@@ -67,7 +67,7 @@ namespace Herms.Cqrs.Azure
                     if (message == null)
                     {
                         var waitMs = _waitState.GetWait();
-                        _log.Warn($"Queue message was null. Chill for {waitMs}ms.");
+                        _log.Trace($"Queue message was null. Chill for {waitMs}ms.");
                         await Task.Delay(waitMs, cancellationToken);
                     }
 

@@ -14,12 +14,15 @@ namespace Herms.Cqrs.Azure
         private readonly IEventHandlerRegistry _eventHandlerRegistry;
         private readonly ILog _log;
         private readonly string _queueName;
+        private readonly QueueWaitState _waitState;
         private CancellationTokenSource _cancellationTokenSource;
         private Task _receiveTask;
-        private QueueWaitState _waitState;
 
         public AzureStorageQueueReceiver(AzureStorageQueueConfiguration queueConfiguration, IEventHandlerRegistry eventHandlerRegistry)
         {
+            if (queueConfiguration == null)
+                throw new ArgumentNullException(nameof(queueConfiguration));
+
             _log = LogManager.GetLogger(this.GetType());
             _connectionString = queueConfiguration.ConnectionString;
             _queueName = queueConfiguration.QueueName;
@@ -37,7 +40,12 @@ namespace Herms.Cqrs.Azure
         {
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;
-            _receiveTask = this.ReceiveAsync(token);
+            var storageAccount = CloudStorageAccount.Parse(_connectionString);
+            var queueClient = storageAccount.CreateCloudQueueClient();
+            _log.Debug("Connected to storage account.");
+
+            _receiveTask = this.ReceiveAsync(queueClient, token);
+            // Nothing happens if an exception is thrown... 
         }
 
         public void Stop()
@@ -48,26 +56,23 @@ namespace Herms.Cqrs.Azure
             _log.Info("Task cancellation requested.");
         }
 
-        private async Task ReceiveAsync(CancellationToken cancellationToken)
+        private async Task ReceiveAsync(CloudQueueClient queueClient, CancellationToken cancellationToken)
         {
-            var storageAccount = CloudStorageAccount.Parse(_connectionString);
-            var queueClient = storageAccount.CreateCloudQueueClient();
-            _log.Debug("Connected to storage account.");
             var queue = await this.InitializeQueue(queueClient, _queueName);
             while (!cancellationToken.IsCancellationRequested)
-            {
                 try
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var message = await queue.GetMessageAsync(cancellationToken);
-                    if(message == null)
+                    if (message == null)
                     {
                         var waitMs = _waitState.GetWait();
                         _log.Warn($"Queue message was null. Chill for {waitMs}ms.");
                         await Task.Delay(waitMs, cancellationToken);
                     }
-                        
-                    else {
+
+                    else
+                    {
                         _waitState.Reset();
                         await this.ProcessMessageAsync(message);
                         await queue.DeleteMessageAsync(message, cancellationToken);
@@ -82,7 +87,6 @@ namespace Herms.Cqrs.Azure
                     // Chew on it.
                     _log.Error(ex);
                 }
-            }
         }
 
         private void Cancel()
@@ -111,7 +115,6 @@ namespace Herms.Cqrs.Azure
             var eventHandlerCollection = _eventHandlerRegistry.ResolveHandlers(@event);
             var results = await eventHandlerCollection.HandleAsync(@event);
             if (results.Status != EventHandlerResultType.Success)
-            {
                 if (results.Status == EventHandlerResultType.Error)
                 {
                     _log.Error($"Event handler collection crashed with message: {results.Message}.");
@@ -120,11 +123,8 @@ namespace Herms.Cqrs.Azure
                 {
                     _log.Error($"Not all event handlers for event {@event.Id} succeeded.");
                     foreach (var result in results.Failed)
-                    {
                         _log.Error(result.Message);
-                    }
                 }
-            }
         }
     }
 }

@@ -4,6 +4,8 @@ namespace Herms.Cqrs
 {
     public class EventHandlerResult
     {
+        private EventHandlerResult() {}
+
         public bool Success { get; set; } = true;
         public string HandlerName { get; set; }
         public string Message { get; set; }

@@ -12,8 +12,8 @@ namespace Herms.Cqrs.Tests
         public async Task GivenMultipleHandlersOneOfWhichThrowsException_WhenHandlingEvent_ThenResultStatusShouldBeHandlerFailure()
         {
             var eventHandlerRegistry = new PoorMansEventHandlerRegistry();
-            eventHandlerRegistry.Register(typeof (IEventHandler<TestEvent1>), typeof (NegativeEventHandler));
-            eventHandlerRegistry.Register(typeof (IEventHandler<TestEvent1>), typeof (PositiveEventHandler));
+            eventHandlerRegistry.Register(typeof(IEventHandler<TestEvent1>), typeof(NegativeEventHandler));
+            eventHandlerRegistry.Register(typeof(IEventHandler<TestEvent1>), typeof(PositiveEventHandler));
 
             var testEvent1 = new TestEvent1();
             var eventHandlers = eventHandlerRegistry.ResolveHandlers(testEvent1);
@@ -51,7 +51,7 @@ namespace Herms.Cqrs.Tests
 
         public Task<EventHandlerResult> HandleAsync(TestEvent2 @event)
         {
-            return Task.FromResult(new EventHandlerResult { HandlerName = this.GetType().Name });
+            return Task.FromResult(EventHandlerResult.CreateSuccessResult(this.GetType()));
         }
     }
 
@@ -60,7 +60,7 @@ namespace Herms.Cqrs.Tests
         public async Task<EventHandlerResult> HandleAsync(IEvent @event)
         {
             if (this.CanHandle(@event))
-                return await HandleAsync((dynamic)@event);
+                return await HandleAsync((dynamic) @event);
             throw new ArgumentException($"Can not handle events of type {@event.GetType().Name}.");
         }
 

@@ -31,13 +31,13 @@ namespace Herms.Cqrs.TestContext.EventHandlers
         public Task<EventHandlerResult> HandleAsync(TestEvent2 @event)
         {
             _log.Debug($"{this.GetType().Name} handling {@event.GetType().Name}");
-            return Task.FromResult(new EventHandlerResult());
+            return Task.FromResult(EventHandlerResult.CreateSuccessResult(this.GetType()));
         }
 
         public Task<EventHandlerResult> HandleAsync(TestEvent3 @event)
         {
             _log.Debug($"{this.GetType().Name} handling {@event.GetType().Name}");
-            return Task.FromResult(new EventHandlerResult());
+            return Task.FromResult(EventHandlerResult.CreateSuccessResult(this.GetType()));
         }
     }
 }

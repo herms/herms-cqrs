@@ -10,38 +10,37 @@ namespace Herms.Cqrs.Azure
     public class AzureStorageQueueDispatcher : IEventDispatcher
     {
         private readonly ILog _log;
-        private readonly CloudQueue _queue;
+        private readonly CloudQueueClient _queueClient;
+        private readonly string _queueName;
+        private CloudQueue _queue;
+        private bool _queueInitialized;
 
         public AzureStorageQueueDispatcher(string connectionString, string queueName)
         {
+            _queueName = queueName;
             _log = LogManager.GetLogger(this.GetType());
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
-            var queueClient = storageAccount.CreateCloudQueueClient();
+            var storageAccount = CloudStorageAccount.Parse(connectionString);
+            _queueClient = storageAccount.CreateCloudQueueClient();
             _log.Debug("Connected to storage account.");
-            _queue = this.InitializeQueue(queueClient, queueName);
         }
 
-        public void Publish(IEvent @event)
+        public async Task PublishAsync(IEvent @event)
         {
-            var message = CloudQueueMessageSerializer.SerializeEventToMessage(@event);
-            _queue.AddMessage(message);
-            _log.Trace($"Event {@event.Id} published.");
-        }
-
-        private async Task PublishAsync(IEvent @event)
-        {
+            if (!_queueInitialized)
+                _queue = await this.InitializeQueueAsync(_queueClient, _queueName);
             var message = CloudQueueMessageSerializer.SerializeEventToMessage(@event);
             await _queue.AddMessageAsync(message);
             _log.Trace($"Event {@event.Id} published.");
         }
 
-        private CloudQueue InitializeQueue(CloudQueueClient cloudQueueClient, string queueName)
+        private async Task<CloudQueue> InitializeQueueAsync(CloudQueueClient cloudQueueClient, string queueName)
         {
             var queue = cloudQueueClient.GetQueueReference(queueName);
             if (!queue.Exists())
             {
                 _log.Info($"Creating queue {queueName}.");
-                queue.CreateIfNotExists();
+                await queue.CreateIfNotExistsAsync();
+                _queueInitialized = true;
             }
             else
                 _log.Debug($"Found queue {queueName}.");

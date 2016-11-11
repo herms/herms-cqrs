@@ -88,6 +88,7 @@
     <Compile Include="AzureEventRepositoryTests.cs" />
     <Compile Include="AzureStorageQueueTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueueWaitStateTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

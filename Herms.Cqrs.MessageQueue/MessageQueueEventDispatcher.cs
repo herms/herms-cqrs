@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Messaging;
+using System.Threading.Tasks;
 using Common.Logging;
 using Herms.Cqrs.Event;
 
@@ -16,9 +17,10 @@ namespace Herms.Cqrs.Msmq
             this.InitializeQueue(queueName);
         }
 
-        public void Publish(IEvent @event)
+        public Task PublishAsync(IEvent @event)
         {
             _queue.Send(@event);
+            return Task.CompletedTask;
         }
 
         private void InitializeQueue(string queueName)

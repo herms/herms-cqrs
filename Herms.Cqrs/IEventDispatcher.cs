@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Herms.Cqrs.Event;
 
 namespace Herms.Cqrs
 {
     public interface IEventDispatcher
     {
-        void Publish(IEvent @event);
+        Task PublishAsync(IEvent @event);
     }
 }

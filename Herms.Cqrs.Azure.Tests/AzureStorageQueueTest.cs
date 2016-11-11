@@ -16,19 +16,24 @@ namespace Herms.Cqrs.Azure.Tests
             var eventHandlerRegistry = new PoorMansEventHandlerRegistry();
             eventHandlerRegistry.Register(typeof(IEventHandler<TestEvent1>), typeof(TestEventHandler1));
             var queueName = "test-messages-001";
-            var queueReceiver = new AzureStorageQueueReceiver(storageConnectionString, queueName, eventHandlerRegistry);
+
+            var queueConfiguration = new AzureStorageQueueConfiguration
+            {
+                ConnectionString = storageConnectionString,
+                QueueName = queueName
+            };
+
+            var queueReceiver = new AzureStorageQueueReceiver(queueConfiguration, eventHandlerRegistry);
 
             var queueDispatcher = new AzureStorageQueueDispatcher(storageConnectionString, queueName);
 
-            var receiveTask = queueReceiver.Start();
+            queueReceiver.Start();
 
-            queueDispatcher.Publish(new TestEvent1 {AggregateId = Guid.NewGuid(), Id =  Guid.NewGuid(), Timestamp = DateTime.UtcNow, Version = 1});
+            await queueDispatcher.PublishAsync(new TestEvent1 {AggregateId = Guid.NewGuid(), Id =  Guid.NewGuid(), Timestamp = DateTime.UtcNow, Version = 1});
 
             await Task.Delay(100);
 
             queueReceiver.Stop();
-
-            await receiveTask;
         }
     }
 }

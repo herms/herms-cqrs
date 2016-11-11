@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureEventRepository.cs" />
+    <Compile Include="AzureStorageQueueConfiguration.cs" />
     <Compile Include="AzureStorageQueueDispatcher.cs" />
     <Compile Include="AzureStorageQueueReceiver.cs" />
     <Compile Include="AzureTableStorageEventRepository.cs" />

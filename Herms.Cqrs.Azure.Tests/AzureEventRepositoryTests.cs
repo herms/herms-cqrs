@@ -20,7 +20,7 @@ namespace Herms.Cqrs.Azure.Tests
             eventMappingRegistry.Register(new EventMapping {EventName = typeof(TestEvent1).FullName, EventType = typeof(TestEvent1)});
             eventMappingRegistry.Register(new EventMapping {EventName = typeof(TestEvent2).FullName, EventType = typeof(TestEvent2)});
             eventMappingRegistry.Register(new EventMapping {EventName = typeof(TestEvent3).FullName, EventType = typeof(TestEvent3)});
-            _sut = new AzureEventRepository<TestAggregate>(connectionString, typeof(TestAggregate).Name, true, eventMappingRegistry);
+            _sut = new AzureEventRepository<TestAggregate>(connectionString, typeof(TestAggregate).Name, eventMappingRegistry, true);
         }
 
         [Fact]

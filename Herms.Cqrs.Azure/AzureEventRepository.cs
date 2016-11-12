@@ -19,18 +19,7 @@ namespace Herms.Cqrs.Azure
         private readonly string GuidStringFormat = "D";
         private CloudTable _table;
 
-        public AzureEventRepository(string connectionString, string tableName, bool clean)
-        {
-            _log = LogManager.GetLogger(typeof(AzureEventRepository<>));
-            var storageAccount = CloudStorageAccount.Parse(connectionString);
-            var createTableTask = this.CreateTableReference(tableName, storageAccount, clean);
-            createTableTask.Wait();
-        }
-
-        public AzureEventRepository(string connectionString, IEventMappingRegistry eventMappingRegistry)
-            : this(connectionString, typeof(TAggregate).Name, false, eventMappingRegistry) {}
-
-        public AzureEventRepository(string connectionString, string tableName, bool clean, IEventMappingRegistry eventMappingRegistry)
+        public AzureEventRepository(string connectionString, string tableName, IEventMappingRegistry eventMappingRegistry, bool clean = false) 
         {
             _eventMappingRegistry = eventMappingRegistry;
             _log = LogManager.GetLogger(typeof(AzureEventRepository<>));
@@ -39,14 +28,12 @@ namespace Herms.Cqrs.Azure
             createTableTask.Wait();
         }
 
-        public AzureEventRepository(string connectionString) : this(connectionString, typeof(TAggregate).Name, false) {}
-
         public async Task SaveAsync(TAggregate aggregate)
         {
             var batch = new TableBatchOperation();
             foreach (var @event in aggregate.GetChanges())
             {
-                var eventName = GetEventName(@event);
+                var eventName = this.GetEventName(@event);
                 var eventEntity = new EventEntity(@event.AggregateId.ToString(GuidStringFormat), @event.Id.ToString(GuidStringFormat))
                 {
                     AggregateType = typeof(TAggregate).Name,

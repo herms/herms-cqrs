@@ -29,6 +29,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Herms.Cqrs.Azure.Tests", "H
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Herms.Cqrs.Msmq", "Herms.Cqrs.MessageQueue\Herms.Cqrs.Msmq.csproj", "{A595733C-BC73-4DFD-ABCD-CD9BA4B3550C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Herms.Cqrs.SimpleInjector", "Herms.Cqrs.SimpleInjector\Herms.Cqrs.SimpleInjector.csproj", "{87666EF4-28A5-45DD-BBA3-E46BCC769B38}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Herms.Cqrs.SimpleInjector.Tests", "Herms.Cqrs.SimpleInjector.Tests\Herms.Cqrs.SimpleInjector.Tests.csproj", "{7F9EA9DD-C17C-4F08-9F9D-9C72B104CE6B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +79,14 @@ Global
 		{A595733C-BC73-4DFD-ABCD-CD9BA4B3550C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A595733C-BC73-4DFD-ABCD-CD9BA4B3550C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A595733C-BC73-4DFD-ABCD-CD9BA4B3550C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87666EF4-28A5-45DD-BBA3-E46BCC769B38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87666EF4-28A5-45DD-BBA3-E46BCC769B38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87666EF4-28A5-45DD-BBA3-E46BCC769B38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87666EF4-28A5-45DD-BBA3-E46BCC769B38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F9EA9DD-C17C-4F08-9F9D-9C72B104CE6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F9EA9DD-C17C-4F08-9F9D-9C72B104CE6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F9EA9DD-C17C-4F08-9F9D-9C72B104CE6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F9EA9DD-C17C-4F08-9F9D-9C72B104CE6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -62,13 +62,8 @@ namespace Herms.Cqrs.Ninject
 
         public void RegisterImplementation(Type handler)
         {
-            var handlers =
-                handler.GetInterfaces()
-                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEventHandler<>));
-            foreach (var eventHandler in handlers)
-            {
-                this.Register(eventHandler, handler);
-            }
+            var handlerDefinitions = HandlerDefinitionCollection.GetEventHandlerDefinitionsFromImplementation(handler);
+            this.Register(handlerDefinitions);
         }
 
         private string CreateEventHandlerName(Type handlerType, Type eventType)

@@ -1,33 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Common.Logging;
 using Herms.Cqrs.Registration;
-using Ninject;
+using SimpleInjector;
 
-namespace Herms.Cqrs.Ninject
+namespace Herms.Cqrs.SimpleInjector
 {
-    public class NinjectCommandHandlerRegistry : ICommandHandlerRegistry
+    public class SimpleInjectorCommandHandlerRegistry : ICommandHandlerRegistry
+
     {
-        private readonly IKernel _kernel;
+        private readonly Container _container;
         private readonly ILog _log;
 
-        public NinjectCommandHandlerRegistry(IKernel kernel)
+        /// <summary>
+        /// Simple Injector locks the container after querying it, so some state is kept here instead.
+        /// </summary>
+        private List<Type> _registeredHandlers;
+
+        public SimpleInjectorCommandHandlerRegistry(Container container)
         {
             _log = LogManager.GetLogger(this.GetType());
-            _kernel = kernel;
+            _container = container;
+            _registeredHandlers = new List<Type>();
         }
 
         public void Register(Type handlerType, Type implementationType)
         {
-            if (!handlerType.IsGenericType && handlerType.GetGenericTypeDefinition() == typeof (ICommandHandler<>))
+            if (!handlerType.IsGenericType && handlerType.GetGenericTypeDefinition() == typeof(ICommandHandler<>))
             {
-                var errorMsg = $"Type {handlerType.Name} is not of type {typeof (ICommandHandler<>).Name}.";
+                var errorMsg = $"Type {handlerType.Name} is not of type {typeof(ICommandHandler<>).Name}.";
                 _log.Error(errorMsg);
                 throw new ArgumentException(errorMsg);
             }
             var genericArguments = handlerType.GetGenericArguments();
-            if (genericArguments.Length != 1 || !typeof (Command).IsAssignableFrom(genericArguments[0]))
+            if (genericArguments.Length != 1 || !typeof(Command).IsAssignableFrom(genericArguments[0]))
             {
                 var errorMsg = $"{implementationType.Name} contains a command handler which does not comply with signature.";
                 _log.Warn(errorMsg);
@@ -36,27 +42,21 @@ namespace Herms.Cqrs.Ninject
             var commandType = genericArguments[0];
             _log.Debug(
                 $"Handling for command {commandType.Name} found in type {implementationType.Name}.");
-            if (_kernel.TryGet(handlerType) != null)
+            if (_registeredHandlers.Contains(handlerType))
             {
                 var errorMsg = $"A command handler for command {commandType.Name} is already registered.";
                 throw new ArgumentException(errorMsg);
             }
-            _kernel.Bind(handlerType)
-                .To(implementationType)
-                .Named(this.CreateCommandHandlerName(implementationType, commandType));
+            _registeredHandlers.Add(handlerType);
+            _container.Register(handlerType, implementationType);
         }
 
-        public void Register(IEnumerable<HandlerDefinition> definitions)
+        public void Register(IEnumerable<HandlerDefinition> handlerDefinitions)
         {
-            foreach (var handlerDefinition in definitions)
+            foreach (var handlerDefinition in handlerDefinitions)
             {
                 this.Register(handlerDefinition.Handler, handlerDefinition.Implementation);
             }
-        }
-
-        public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : Command
-        {
-            return (ICommandHandler<T>) _kernel.Get(typeof (ICommandHandler<T>));
         }
 
         public void RegisterImplementation(Type implementationType)
@@ -65,12 +65,9 @@ namespace Herms.Cqrs.Ninject
             this.Register(commandHandlers);
         }
 
-        private string CreateCommandHandlerName(Type handlerType, Type commandType)
+        public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : Command
         {
-            var commandHandlerName = $"{handlerType.Name}_{commandType.Name}";
-            if (_log.IsTraceEnabled)
-                _log.Trace($"Handler name for type {handlerType.Name} handling command {commandType.Name}: {commandHandlerName}.");
-            return $"{handlerType.Name}_{commandType.Name}";
+            return _container.GetInstance<ICommandHandler<T>>();
         }
     }
 }

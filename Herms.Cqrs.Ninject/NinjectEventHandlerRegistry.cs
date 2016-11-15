@@ -20,8 +20,10 @@ namespace Herms.Cqrs.Ninject
             _log = LogManager.GetLogger(this.GetType());
         }
 
-        public void Register(Type eventHandler, Type implementationType)
+        public void Register(HandlerDefinition handlerDefinition)
         {
+            var eventHandler = handlerDefinition.Handler;
+            var implementationType = handlerDefinition.Implementation;
             if (!eventHandler.IsAssignableFrom(implementationType))
             {
                 var errorMsg = $"{eventHandler} is not assignable from {implementationType}.";
@@ -50,7 +52,7 @@ namespace Herms.Cqrs.Ninject
         {
             foreach (var handlerDefinition in handlerDefinitions)
             {
-                this.Register(handlerDefinition.Handler, handlerDefinition.Implementation);
+                this.Register(handlerDefinition);
             }
         }
 
@@ -62,13 +64,8 @@ namespace Herms.Cqrs.Ninject
 
         public void RegisterImplementation(Type handler)
         {
-            var handlers =
-                handler.GetInterfaces()
-                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof (IEventHandler<>));
-            foreach (var eventHandler in handlers)
-            {
-                this.Register(eventHandler, handler);
-            }
+            var handlerDefinitions = HandlerDefinitionCollection.GetEventHandlerDefinitionsFromImplementation(handler);
+            this.Register(handlerDefinitions);
         }
 
         private string CreateEventHandlerName(Type handlerType, Type eventType)

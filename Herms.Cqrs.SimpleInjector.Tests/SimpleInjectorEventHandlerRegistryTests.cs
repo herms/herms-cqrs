@@ -1,22 +1,24 @@
-﻿using System;
+using System;
 using Herms.Cqrs.Event;
 using Herms.Cqrs.TestContext.EventHandlers;
 using Herms.Cqrs.TestContext.Events;
-using Ninject;
+using SimpleInjector;
 using Xunit;
 
-namespace Herms.Cqrs.Ninject.Tests
+namespace Herms.Cqrs.SimpleInjector.Tests
 {
-    public class NinjectEventHandlerRegistryTests
+    public class SimpleInjectorEventHandlerRegistryTests
+
     {
         [Fact]
         public void GivenEventHandlersInRegistry_WhenRequestingHandlersForAnEventType_ThenTheCorrespondingHandlersShouldBeReturned()
         {
-            var kernel = new StandardKernel();
-            var eventHandlerRegistry = new NinjectEventHandlerRegistry(kernel);
+            var kernel = new Container();
+            var eventHandlerRegistry = new SimpleInjectorEventHandlerRegistry(kernel);
 
-            eventHandlerRegistry.RegisterImplementation(typeof (TestEventHandler1));
-            eventHandlerRegistry.RegisterImplementation(typeof (TestEventHandler2));
+            eventHandlerRegistry.RegisterImplementation(typeof(TestEventHandler1));
+            eventHandlerRegistry.RegisterImplementation(typeof(TestEventHandler2));
+            eventHandlerRegistry.Build();
 
             var event1 = new TestEvent1();
             var handlersForEvent1 = eventHandlerRegistry.ResolveHandlers(event1);

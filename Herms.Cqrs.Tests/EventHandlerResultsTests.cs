@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Herms.Cqrs.Event;
+using Herms.Cqrs.Registration;
 using Herms.Cqrs.TestContext.Events;
 using Xunit;
 
@@ -12,8 +13,8 @@ namespace Herms.Cqrs.Tests
         public async Task GivenMultipleHandlersOneOfWhichThrowsException_WhenHandlingEvent_ThenResultStatusShouldBeHandlerFailure()
         {
             var eventHandlerRegistry = new PoorMansEventHandlerRegistry();
-            eventHandlerRegistry.Register(typeof(IEventHandler<TestEvent1>), typeof(NegativeEventHandler));
-            eventHandlerRegistry.Register(typeof(IEventHandler<TestEvent1>), typeof(PositiveEventHandler));
+            eventHandlerRegistry.Register(new HandlerDefinition {Handler = typeof(IEventHandler<TestEvent1>), Implementation = typeof(NegativeEventHandler)});
+            eventHandlerRegistry.Register(new HandlerDefinition { Handler = typeof(IEventHandler<TestEvent1>), Implementation = typeof(PositiveEventHandler)});
 
             var testEvent1 = new TestEvent1();
             var eventHandlers = eventHandlerRegistry.ResolveHandlers(testEvent1);

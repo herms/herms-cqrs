@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{85C2484C-C0E1-4D65-868C-F7753F90A01D}</ProjectGuid>
+    <ProjectGuid>{87666EF4-28A5-45DD-BBA3-E46BCC769B38}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Herms.Cqrs</RootNamespace>
-    <AssemblyName>Herms.Cqrs</AssemblyName>
+    <RootNamespace>Herms.Cqrs.SimpleInjector</RootNamespace>
+    <AssemblyName>Herms.Cqrs.SimpleInjector</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,11 +30,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging">
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Common.Logging.Core">
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SimpleInjector, Version=3.2.7.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.3.2.7\lib\net45\SimpleInjector.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,48 +52,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aggregate\AggregateBase.cs" />
-    <Compile Include="Aggregate\AggregateExtensions.cs" />
-    <Compile Include="Aggregate\EventSourcedAggregateBase.cs" />
-    <Compile Include="Aggregate\AggregateLoader.cs" />
-    <Compile Include="Aggregate\Exceptions\AggregateLoadingException.cs" />
-    <Compile Include="Aggregate\Exceptions\AggregateNotFoundException.cs" />
-    <Compile Include="Aggregate\Exceptions\AggregateSingularityException.cs" />
-    <Compile Include="Aggregate\Exceptions\EventApplicationException.cs" />
-    <Compile Include="Aggregate\Exceptions\AggregateModelException.cs" />
-    <Compile Include="Aggregate\IAggregate.cs" />
-    <Compile Include="Aggregate\IEventSourced.cs" />
-    <Compile Include="Event\EventEnvelope.cs" />
-    <Compile Include="EventHandlerBase.cs" />
-    <Compile Include="EventHandlerCollection.cs" />
-    <Compile Include="EventHandlerResult.cs" />
-    <Compile Include="EventHandlerResults.cs" />
-    <Compile Include="EventMappingRegistry.cs" />
-    <Compile Include="Event\EventNameAttribute.cs" />
-    <Compile Include="Event\Exceptions\UnexpectedEventVersionException.cs" />
-    <Compile Include="GenericArgumentExtractor.cs" />
-    <Compile Include="IAggregateRepository.cs" />
-    <Compile Include="IEventDispatcher.cs" />
-    <Compile Include="IEventHandlerRegistry.cs" />
-    <Compile Include="Command.cs" />
-    <Compile Include="Event\IEvent.cs" />
-    <Compile Include="Event\VersionedEvent.cs" />
-    <Compile Include="ICommandHandler.cs" />
-    <Compile Include="ICommandHandlerRegistry.cs" />
-    <Compile Include="ICommandSender.cs" />
-    <Compile Include="IEventHandler.cs" />
-    <Compile Include="IEventMappingRegistry.cs" />
-    <Compile Include="PoorMansEventHandlerRegistry.cs" />
+    <Compile Include="SimpleInjectorEventHandlerRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Registration\EventMapping.cs" />
-    <Compile Include="Registration\HandlerDefinition.cs" />
-    <Compile Include="Registration\HandlerDefinitionCollection.cs" />
-    <Compile Include="Scanning\AssemblyScanResult.cs" />
-    <Compile Include="Scanning\IAssemblyScanner.cs" />
-    <Compile Include="Scanning\AssemblyScanner.cs" />
+    <Compile Include="SimpleInjectorCommandHandlerRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Herms.Cqrs.nuspec" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Herms.Cqrs\Herms.Cqrs.csproj">
+      <Project>{85C2484C-C0E1-4D65-868C-F7753F90A01D}</Project>
+      <Name>Herms.Cqrs</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

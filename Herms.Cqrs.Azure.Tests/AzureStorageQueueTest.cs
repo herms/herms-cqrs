@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Threading.Tasks;
+using Herms.Cqrs.Registration;
 using Herms.Cqrs.TestContext.EventHandlers;
 using Herms.Cqrs.TestContext.Events;
 using Xunit;
@@ -14,7 +15,12 @@ namespace Herms.Cqrs.Azure.Tests
         {
             var storageConnectionString = ConfigurationManager.AppSettings["StorageConnectionString"];
             var eventHandlerRegistry = new PoorMansEventHandlerRegistry();
-            eventHandlerRegistry.Register(typeof(IEventHandler<TestEvent1>), typeof(TestEventHandler1));
+            var handlerDefinition = new HandlerDefinition
+            {
+                Handler = typeof(IEventHandler<TestEvent1>),
+                Implementation = typeof(TestEventHandler1)
+            };
+            eventHandlerRegistry.Register(handlerDefinition);
             var queueName = "test-messages-001";
 
             var queueConfiguration = new AzureStorageQueueConfiguration

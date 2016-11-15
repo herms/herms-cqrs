@@ -8,28 +8,54 @@ using SimpleInjector;
 
 namespace Herms.Cqrs.SimpleInjector
 {
-    public class SimpleInjectorEventHandlerRegistry : IEventHandlerRegistry, IDisposable
+    public class SimpleInjectorEventHandlerRegistry : IEventHandlerRegistry
     {
         private readonly Container _container;
-        private readonly ILog _log;
         private readonly Dictionary<Type, List<Type>> _eventHandlers;
+        private readonly ILog _log;
 
         public SimpleInjectorEventHandlerRegistry(Container container)
         {
             _container = container;
-            _container.ResolveUnregisteredType += this.OnResolveUnregisteredType;
             _log = LogManager.GetLogger(this.GetType());
             _eventHandlers = new Dictionary<Type, List<Type>>();
         }
 
-        public void Dispose()
+        public void Register(IEnumerable<HandlerDefinition> handlerDefinitions)
         {
-            if (_container != null)
-                _container.ResolveUnregisteredType -= this.OnResolveUnregisteredType;
+            foreach (var handlerDefinition in handlerDefinitions)
+                this.Register(handlerDefinition);
         }
 
-        public void Register(Type eventHandler, Type implementationType)
+        public EventHandlerCollection ResolveHandlers<T>(T eventType) where T : IEvent
         {
+            _log.Debug($"Resolve handlers for event type " + eventType.GetType().Name + ".");
+            var handlers = _container.GetAllInstances<IEventHandler<T>>();
+            return new EventHandlerCollection(handlers.Select(h => (IEventHandler) h));
+        }
+
+        public void Build()
+        {
+            lock (_eventHandlers)
+            {
+                foreach (var eventHandlersKey in _eventHandlers.Keys)
+                    _container.RegisterCollection(eventHandlersKey, _eventHandlers[eventHandlersKey]);
+            }
+            _container.Verify();
+        }
+
+        public void RegisterImplementation(Type implementation)
+        {
+            var handlerDefinitions = HandlerDefinitionCollection.GetEventHandlerDefinitionsFromImplementation(implementation);
+            this.Register(handlerDefinitions);
+        }
+
+        private void Register(HandlerDefinition handlerDefinition)
+        {
+            var eventHandler = handlerDefinition.Handler;
+            var implementationType = handlerDefinition.Implementation;
+            if (eventHandler.GetGenericTypeDefinition() != typeof(IEventHandler<>))
+                throw new ArgumentException($"{eventHandler.Name} is not assignable from {typeof(IEventHandler<>).Name}.");
             if (!eventHandler.IsAssignableFrom(implementationType))
             {
                 var errorMsg = $"{eventHandler} is not assignable from {implementationType}.";
@@ -53,52 +79,14 @@ namespace Herms.Cqrs.SimpleInjector
         private void AddToInternalList(Type eventHandler, Type implementationType)
         {
             var genericArgument = eventHandler.GetGenericArguments()[0];
-            if(!_eventHandlers.ContainsKey(eventHandler))
-                _eventHandlers[eventHandler] = new List<Type> {implementationType};
-            else 
-                _eventHandlers[eventHandler].Add(implementationType);
-            _log.Debug($"Added registration for {eventHandler.Name}<{genericArgument.Name}> in {implementationType.Name}.");
-        }
-
-        public void Register(IEnumerable<HandlerDefinition> handlerDefinitions)
-        {
-            foreach (var handlerDefinition in handlerDefinitions)
-                this.Register(handlerDefinition.Handler, handlerDefinition.Implementation);
-        }
-
-        public EventHandlerCollection ResolveHandlers<T>(T eventType) where T : IEvent
-        {
-            _log.Debug("Resolve instances for event type "+eventType.GetType().Name+".");
-            var handlers = _container.GetAllInstances<IEventHandler<T>>();
-            return new EventHandlerCollection(handlers.Select(h => (IEventHandler) h));
-        }
-
-        public void RegisterImplementation(Type handler)
-        {
-            var handlerDefinitions = HandlerDefinitionCollection.GetEventHandlerDefinitionsFromImplementation(handler);
-            this.Register(handlerDefinitions);
-        }
-
-        private void OnResolveUnregisteredType(object sender, UnregisteredTypeEventArgs e)
-        {
-            if (e.UnregisteredServiceType.IsGenericType &&
-                (e.UnregisteredServiceType.GetGenericTypeDefinition() == typeof(IEventHandler<>)))
+            lock (_eventHandlers)
             {
-                _log.Debug("Resolve unregistered event handler.");
-                var genericType = e.UnregisteredServiceType.GetGenericTypeDefinition();
-                var eventType = e.UnregisteredServiceType.GetGenericArguments()[0];
-                if (typeof(IEvent).IsAssignableFrom(eventType))
-                    if (_eventHandlers.ContainsKey(genericType))
-                        _container.RegisterCollection(genericType, _eventHandlers[genericType]);
+                if (!_eventHandlers.ContainsKey(eventHandler))
+                    _eventHandlers[eventHandler] = new List<Type> { implementationType };
+                else
+                    _eventHandlers[eventHandler].Add(implementationType);
             }
-        }
-
-        private string CreateEventHandlerName(Type handlerType, Type eventType)
-        {
-            var eventHandlerName = $"{handlerType.Name}_{eventType.Name}";
-            if (_log.IsTraceEnabled)
-                _log.Trace($"Handler name for type {handlerType.Name} handling event {eventType.Name}: {eventHandlerName}.");
-            return eventHandlerName;
+            _log.Debug($"Added handler for {genericArgument.Name} in {implementationType.Name}.");
         }
     }
 }

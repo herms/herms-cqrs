@@ -16,8 +16,10 @@ namespace Herms.Cqrs
             _log = LogManager.GetLogger(this.GetType());
         }
 
-        public void Register(Type eventHandler, Type implementationType)
+        public void Register(HandlerDefinition handlerDefinition)
         {
+            var eventHandler = handlerDefinition.Handler;
+            var implementationType = handlerDefinition.Implementation;
             _log.Debug($"Register event handler {eventHandler.Name} in {implementationType.Name}");
             var genericArgument = eventHandler.GetGenericArguments()[0];
             _log.Debug($"Event type: {genericArgument.Name}.");
@@ -38,7 +40,7 @@ namespace Herms.Cqrs
         {
             foreach (var handlerDefinition in handlerDefinitions)
             {
-                this.Register(handlerDefinition.Handler, handlerDefinition.Implementation);
+                this.Register(handlerDefinition);
             }
         }
 

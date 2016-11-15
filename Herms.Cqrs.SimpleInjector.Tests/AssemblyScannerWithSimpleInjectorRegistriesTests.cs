@@ -22,6 +22,7 @@ namespace Herms.Cqrs.SimpleInjector.Tests
             var results = assemblyScanner.ScanAssemblyForHandlers(typeof(TestEvent1).Assembly);
             commandHandlerRegistry.Register(results.CommandHandlers);
             eventHandlerRegistry.Register(results.EventHandlers);
+            eventHandlerRegistry.Build();
 
             var handlersForTestEvent1 = eventHandlerRegistry.ResolveHandlers(new TestEvent1());
             var handlersForTestEvent2 = eventHandlerRegistry.ResolveHandlers(new TestEvent2());

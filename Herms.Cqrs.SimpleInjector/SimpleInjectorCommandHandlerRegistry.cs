@@ -12,10 +12,16 @@ namespace Herms.Cqrs.SimpleInjector
         private readonly Container _container;
         private readonly ILog _log;
 
+        /// <summary>
+        /// Simple Injector locks the container after querying it, so some state is kept here instead.
+        /// </summary>
+        private List<Type> _registeredHandlers;
+
         public SimpleInjectorCommandHandlerRegistry(Container container)
         {
             _log = LogManager.GetLogger(this.GetType());
             _container = container;
+            _registeredHandlers = new List<Type>();
         }
 
         public void Register(Type handlerType, Type implementationType)
@@ -36,11 +42,12 @@ namespace Herms.Cqrs.SimpleInjector
             var commandType = genericArguments[0];
             _log.Debug(
                 $"Handling for command {commandType.Name} found in type {implementationType.Name}.");
-            if (_container.GetRegistration(handlerType) != null)
+            if (_registeredHandlers.Contains(handlerType))
             {
                 var errorMsg = $"A command handler for command {commandType.Name} is already registered.";
                 throw new ArgumentException(errorMsg);
             }
+            _registeredHandlers.Add(handlerType);
             _container.Register(handlerType, implementationType);
         }
 

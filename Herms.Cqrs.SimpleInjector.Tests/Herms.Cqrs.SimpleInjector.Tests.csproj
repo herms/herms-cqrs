@@ -69,6 +69,7 @@
     <Compile Include="SimpleInjectorEventHandlerRegistryTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +85,9 @@
       <Project>{85C2484C-C0E1-4D65-868C-F7753F90A01D}</Project>
       <Name>Herms.Cqrs</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

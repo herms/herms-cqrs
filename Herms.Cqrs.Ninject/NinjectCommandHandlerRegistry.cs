@@ -67,9 +67,9 @@ namespace Herms.Cqrs.Ninject
 
         private string CreateCommandHandlerName(Type handlerType, Type commandType)
         {
-            var eventHandlerName = $"{handlerType.Name}_{commandType.Name}";
+            var commandHandlerName = $"{handlerType.Name}_{commandType.Name}";
             if (_log.IsTraceEnabled)
-                _log.Trace($"Handler name for type {handlerType.Name} handling command {commandType.Name}: {eventHandlerName}.");
+                _log.Trace($"Handler name for type {handlerType.Name} handling command {commandType.Name}: {commandHandlerName}.");
             return $"{handlerType.Name}_{commandType.Name}";
         }
     }

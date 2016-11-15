@@ -14,22 +14,31 @@ namespace Herms.Cqrs.Azure
 {
     public class AzureEventRepository<TAggregate> : IAggregateRepository<TAggregate> where TAggregate : IAggregate, IEventSourced, new()
     {
+        private readonly bool _clean;
         private readonly IEventMappingRegistry _eventMappingRegistry;
         private readonly ILog _log;
+        private readonly string _tableName;
         private readonly string GuidStringFormat = "D";
+        private readonly CloudStorageAccount _storageAccount;
         private CloudTable _table;
+        private bool _tableCreated;
 
-        public AzureEventRepository(string connectionString, string tableName, IEventMappingRegistry eventMappingRegistry, bool clean = false) 
+        public AzureEventRepository(string connectionString, string tableName, IEventMappingRegistry eventMappingRegistry,
+            bool clean = false)
         {
+            _tableName = tableName;
             _eventMappingRegistry = eventMappingRegistry;
+            _clean = clean;
             _log = LogManager.GetLogger(typeof(AzureEventRepository<>));
-            var storageAccount = CloudStorageAccount.Parse(connectionString);
-            var createTableTask = this.CreateTableReference(tableName, storageAccount, clean);
-            createTableTask.Wait();
+            _storageAccount = CloudStorageAccount.Parse(connectionString);
+
+            /*var createTableTask = this.CreateTableReference(tableName, storageAccount, clean);
+            createTableTask.Wait();*/
         }
 
         public async Task SaveAsync(TAggregate aggregate)
         {
+            await this.CreateTableReferenceAsync();
             var batch = new TableBatchOperation();
             foreach (var @event in aggregate.GetChanges())
             {
@@ -49,19 +58,8 @@ namespace Herms.Cqrs.Azure
             {
                 _log.Fatal($"Error while saving events!");
                 foreach (var r in result.Where(IsNotSuccessStatus))
-                {
                     _log.Error($"HTTP {r.HttpStatusCode} for {r.Result}.");
-                }
             }
-        }
-
-        private string GetEventName(IEvent @event)
-        {
-            if (_eventMappingRegistry != null)
-            {
-                return _eventMappingRegistry.ResolveEventName(@event.GetType());
-            }
-            return @event.GetType().FullName;
         }
 
         public void Save(TAggregate aggregate)
@@ -72,6 +70,8 @@ namespace Herms.Cqrs.Azure
 
         public TAggregate Get(Guid id)
         {
+            var task = this.CreateTableReferenceAsync();
+            task.Wait();
             var query =
                 new TableQuery<EventEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal,
                     id.ToString(GuidStringFormat)));
@@ -96,9 +96,16 @@ namespace Herms.Cqrs.Azure
             return default(TAggregate);
         }
 
+        private string GetEventName(IEvent @event)
+        {
+            if (_eventMappingRegistry != null)
+                return _eventMappingRegistry.ResolveEventName(@event.GetType());
+            return @event.GetType().FullName;
+        }
+
         private static bool IsNotSuccessStatus(TableResult r)
         {
-            return r.HttpStatusCode < 200 || r.HttpStatusCode >= 300;
+            return (r.HttpStatusCode < 200) || (r.HttpStatusCode >= 300);
         }
 
         private Type GetTypeFromEntity(EventEntity eventEntity)
@@ -106,15 +113,19 @@ namespace Herms.Cqrs.Azure
             return _eventMappingRegistry.ResolveEventType(eventEntity.EventName);
         }
 
-        private async Task CreateTableReference(string tableName, CloudStorageAccount storageAccount, bool clean = false)
+        private async Task CreateTableReferenceAsync()
         {
-            var tableClient = storageAccount.CreateCloudTableClient();
-            _table = tableClient.GetTableReference(tableName);
-            if (clean)
-                await _table.DeleteIfExistsAsync();
-            var created = await _table.CreateIfNotExistsAsync();
-            if (created)
-                _log.Info($"Created table {tableName}.");
+            if (!_tableCreated)
+            {
+                var tableClient = _storageAccount.CreateCloudTableClient();
+                _table = tableClient.GetTableReference(_tableName);
+                if (_clean)
+                    await _table.DeleteIfExistsAsync();
+                var created = await _table.CreateIfNotExistsAsync();
+                if (created)
+                    _log.Info($"Created table {_tableName}.");
+                _tableCreated = true;
+            }
         }
     }
 

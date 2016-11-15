@@ -1,19 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7F9EA9DD-C17C-4F08-9F9D-9C72B104CE6B}</ProjectGuid>
+    <ProjectGuid>{5FE033FC-BD6C-479F-B3DF-F33ADB4A036B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Herms.Cqrs.SimpleInjector.Tests</RootNamespace>
-    <AssemblyName>Herms.Cqrs.SimpleInjector.Tests</AssemblyName>
+    <RootNamespace>Herms.Cqrs.TestCommon</RootNamespace>
+    <AssemblyName>Herms.Cqrs.TestCommon</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SimpleInjector, Version=3.2.7.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
-      <HintPath>..\packages\SimpleInjector.3.2.7\lib\net45\SimpleInjector.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -63,43 +57,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyScannerWithSimpleInjectorRegistriesTests.cs" />
+    <Compile Include="AssemblyScannerCommonTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleInjectorCommandHandlerRegistryTests.cs" />
-    <Compile Include="SimpleInjectorEventHandlerRegistryTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Herms.Cqrs.SimpleInjector\Herms.Cqrs.SimpleInjector.csproj">
-      <Project>{87666EF4-28A5-45DD-BBA3-E46BCC769B38}</Project>
-      <Name>Herms.Cqrs.SimpleInjector</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Herms.Cqrs.TestCommon\Herms.Cqrs.TestCommon.csproj">
-      <Project>{5FE033FC-BD6C-479F-B3DF-F33ADB4A036B}</Project>
-      <Name>Herms.Cqrs.TestCommon</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Herms.Cqrs.TestContext\Herms.Cqrs.TestContext.csproj">
-      <Project>{9B78081C-D0CC-4D17-9287-EFEAA6E12D26}</Project>
+      <Project>{9b78081c-d0cc-4d17-9287-efeaa6e12d26}</Project>
       <Name>Herms.Cqrs.TestContext</Name>
     </ProjectReference>
     <ProjectReference Include="..\Herms.Cqrs\Herms.Cqrs.csproj">
-      <Project>{85C2484C-C0E1-4D65-868C-F7753F90A01D}</Project>
+      <Project>{85c2484c-c0e1-4d65-868c-f7753f90a01d}</Project>
       <Name>Herms.Cqrs</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

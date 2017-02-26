@@ -19,6 +19,7 @@ namespace Herms.Cqrs
 
         public EventHandlerCollection(IEnumerable<IEventHandler> eventHandlers)
         {
+            _log = LogManager.GetLogger(this.GetType());
             _eventHandlers = eventHandlers;
         }
 

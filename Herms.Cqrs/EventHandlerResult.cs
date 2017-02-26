@@ -1,4 +1,5 @@
 ﻿using System;
+using Herms.Cqrs.Event;
 
 namespace Herms.Cqrs
 {
@@ -9,35 +10,36 @@ namespace Herms.Cqrs
         public bool Success { get; set; } = true;
         public string HandlerName { get; set; }
         public string Message { get; set; }
+        public IEvent Event { get; set; }
 
-        public static EventHandlerResult CreateSuccessResult(Type handlerType)
+        public static EventHandlerResult CreateSuccessResult(IEvent @event, Type handlerType)
         {
-            return new EventHandlerResult { HandlerName = handlerType.Name };
+            return new EventHandlerResult { Event = @event, HandlerName = handlerType.Name };
         }
 
-        public static EventHandlerResult CreateSuccessResult(string handlerName)
+        public static EventHandlerResult CreateSuccessResult(IEvent @event, string handlerName)
         {
-            return new EventHandlerResult { HandlerName = handlerName };
+            return new EventHandlerResult { Event = @event, HandlerName = handlerName };
         }
 
-        public static EventHandlerResult CreateFailureResult(Type handlerType, Exception exception)
+        public static EventHandlerResult CreateFailureResult(IEvent @event, Type handlerType, Exception exception)
         {
-            return new EventHandlerResult { HandlerName = handlerType.Name, Success = false, Message = exception.Message };
+            return new EventHandlerResult { Event = @event, HandlerName = handlerType.Name, Success = false, Message = exception.Message };
         }
 
-        public static EventHandlerResult CreateFailureResult(string handlerName, Exception exception)
+        public static EventHandlerResult CreateFailureResult(IEvent @event, string handlerName, Exception exception)
         {
-            return new EventHandlerResult { HandlerName = handlerName, Success = false, Message = exception.Message };
+            return new EventHandlerResult { Event = @event, HandlerName = handlerName, Success = false, Message = exception.Message };
         }
 
-        public static EventHandlerResult CreateFailureResult(Type handlerType, string message)
+        public static EventHandlerResult CreateFailureResult(IEvent @event, Type handlerType, string message)
         {
-            return new EventHandlerResult { HandlerName = handlerType.Name, Success = false, Message = message };
+            return new EventHandlerResult { Event = @event, HandlerName = handlerType.Name, Success = false, Message = message };
         }
 
-        public static EventHandlerResult CreateFailureResult(string handlerName, string message)
+        public static EventHandlerResult CreateFailureResult(IEvent @event, string handlerName, string message)
         {
-            return new EventHandlerResult { HandlerName = handlerName, Success = false, Message = message };
+            return new EventHandlerResult { Event = @event, HandlerName = handlerName, Success = false, Message = message };
         }
     }
 }

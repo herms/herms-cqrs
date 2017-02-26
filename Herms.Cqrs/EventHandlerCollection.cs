@@ -47,14 +47,14 @@ namespace Herms.Cqrs
                                     var aggregateException = ex as AggregateException;
                                     if (aggregateException?.InnerException != null)
                                         rootException = aggregateException.InnerException;
-                                    results.Add(EventHandlerResult.CreateFailureResult(eventHandler.GetType(), rootException));
+                                    results.Add(EventHandlerResult.CreateFailureResult(@event, eventHandler.GetType(), rootException));
                                 }
                             }));
                         //eventHandleTasks.Add(handleAsync);
                     }
                     catch (AggregateException ae)
                     {
-                        results.Add(EventHandlerResult.CreateFailureResult(eventHandler.GetType(), ae.GetBaseException()));
+                        results.Add(EventHandlerResult.CreateFailureResult(@event, eventHandler.GetType(), ae.GetBaseException()));
                     }
                 }
                 await Task.WhenAll(eventHandleTasks.ToArray());

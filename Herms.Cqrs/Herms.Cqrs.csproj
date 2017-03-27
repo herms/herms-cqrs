@@ -78,6 +78,7 @@
     <Compile Include="ICommandSender.cs" />
     <Compile Include="IEventHandler.cs" />
     <Compile Include="IEventMappingRegistry.cs" />
+    <Compile Include="ISaga.cs" />
     <Compile Include="PoorMansEventHandlerRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Registration\EventMapping.cs" />

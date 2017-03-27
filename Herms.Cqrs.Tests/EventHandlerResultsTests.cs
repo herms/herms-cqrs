@@ -52,7 +52,7 @@ namespace Herms.Cqrs.Tests
 
         public Task<EventHandlerResult> HandleAsync(TestEvent2 @event)
         {
-            return Task.FromResult(EventHandlerResult.CreateSuccessResult(this.GetType()));
+            return Task.FromResult(EventHandlerResult.CreateSuccessResult(@event, this.GetType()));
         }
     }
 
@@ -74,7 +74,7 @@ namespace Herms.Cqrs.Tests
 
         public Task<EventHandlerResult> HandleAsync(TestEvent1 @event)
         {
-            return Task.FromResult(EventHandlerResult.CreateSuccessResult(this.GetType()));
+            return Task.FromResult(EventHandlerResult.CreateSuccessResult(@event, this.GetType()));
         }
     }
 }

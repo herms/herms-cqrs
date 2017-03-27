@@ -115,6 +115,7 @@ namespace Herms.Cqrs.Azure
             var eventHandlerCollection = _eventHandlerRegistry.ResolveHandlers(@event);
             var results = await eventHandlerCollection.HandleAsync(@event);
             if (results.Status != EventHandlerResultType.Success)
+            {
                 if (results.Status == EventHandlerResultType.Error)
                 {
                     _log.Error($"Event handler collection crashed with message: {results.Message}.");
@@ -125,6 +126,7 @@ namespace Herms.Cqrs.Azure
                     foreach (var result in results.Failed)
                         _log.Error(result.Message);
                 }
+            }
         }
     }
 }

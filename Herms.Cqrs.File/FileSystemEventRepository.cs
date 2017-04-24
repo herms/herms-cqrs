@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Common.Logging;
 using Herms.Cqrs.Aggregate;
 using Herms.Cqrs.Event;
+using Herms.Cqrs.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

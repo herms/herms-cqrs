@@ -30,5 +30,14 @@ namespace Herms.Cqrs
                 command.CorrelationId  = correlationId;
             }
         }
+
+        public static void Correlate(params Command[] commands)
+        {
+            var correlationId = Guid.NewGuid();
+            foreach (var command in commands)
+            {
+                command.CorrelationId  = correlationId;
+            }
+        }
     }
 }

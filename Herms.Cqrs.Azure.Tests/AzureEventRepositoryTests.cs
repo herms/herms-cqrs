@@ -55,7 +55,7 @@ namespace Herms.Cqrs.Azure.Tests
 
             var t1 = _sut.SaveAsync(a1);
             var t2 = _sut.SaveAsync(a2);
-            Task.WaitAll(new[] { t1, t2 });
+            Task.WaitAll(t1, t2);
             
             await Task.Delay(50);
 

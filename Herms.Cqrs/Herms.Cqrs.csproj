@@ -37,6 +37,9 @@
     <Reference Include="Common.Logging.Core">
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,7 +61,13 @@
     <Compile Include="Aggregate\Exceptions\AggregateModelException.cs" />
     <Compile Include="Aggregate\IAggregate.cs" />
     <Compile Include="Aggregate\IEventSourced.cs" />
+    <Compile Include="CommandStatus.cs" />
+    <Compile Include="IInfrastructureRepository.cs" />
+    <Compile Include="SagaBase.cs" />
+    <Compile Include="SagaConsistencyException.cs" />
+    <Compile Include="SagaException.cs" />
     <Compile Include="Serialization\CommandEnvelope.cs" />
+    <Compile Include="Serialization\CommandEnvelopeSerilizer.cs" />
     <Compile Include="Serialization\EventEnvelope.cs" />
     <Compile Include="EventHandlerBase.cs" />
     <Compile Include="EventHandlerCollection.cs" />
@@ -88,9 +97,11 @@
     <Compile Include="Scanning\AssemblyScanResult.cs" />
     <Compile Include="Scanning\IAssemblyScanner.cs" />
     <Compile Include="Scanning\AssemblyScanner.cs" />
+    <Compile Include="Serialization\EventEnvelopeSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Herms.Cqrs.nuspec" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

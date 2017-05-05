@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Herms.Cqrs
 {
     public interface ISaga
     {
+        Guid Id { get; }
         IEnumerable<Command> GetCommands();
-        void Proceed();
+        Task Proceed();
     }
 }

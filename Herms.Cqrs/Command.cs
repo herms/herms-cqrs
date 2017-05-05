@@ -16,27 +16,32 @@ namespace Herms.Cqrs
             AggregateId = aggregateId;
             CommandId = commandId;
             CorrelationId = correlationId;
+            Status = CommandStatus.Received;
         }
 
-        public Guid CommandId { get; private set; }
+        public Guid CommandId { get; }
         public Guid? CorrelationId { get; set; }
-        public Guid AggregateId { get; private set; }
+        public Guid AggregateId { get; }
+        public DateTime? Dispatched { get; set; }
+        public DateTime? Processed { get; set; }
+        public CommandStatus Status { get; set; }
 
         public static void Correlate(IEnumerable<Command> commands)
         {
-            var correlationId = Guid.NewGuid();
-            foreach (var command in commands)
-            {
-                command.CorrelationId  = correlationId;
-            }
+            CorrelateInternal(commands);
         }
 
         public static void Correlate(params Command[] commands)
         {
+            CorrelateInternal(commands);
+        }
+
+        private static void CorrelateInternal(IEnumerable<Command> commands)
+        {
             var correlationId = Guid.NewGuid();
             foreach (var command in commands)
             {
-                command.CorrelationId  = correlationId;
+                command.CorrelationId = correlationId;
             }
         }
     }

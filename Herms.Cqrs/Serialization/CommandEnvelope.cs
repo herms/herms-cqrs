@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Herms.Cqrs.Serialization {
+namespace Herms.Cqrs.Serialization
+{
     [Serializable]
     public class CommandEnvelope
     {

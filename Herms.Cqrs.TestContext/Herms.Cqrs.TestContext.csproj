@@ -59,6 +59,7 @@
     <Compile Include="Events\TestEvent3.cs" />
     <Compile Include="Models\TestAggregate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestSaga.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Herms.Cqrs\Herms.Cqrs.csproj">

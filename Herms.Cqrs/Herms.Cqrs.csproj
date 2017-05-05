@@ -58,7 +58,8 @@
     <Compile Include="Aggregate\Exceptions\AggregateModelException.cs" />
     <Compile Include="Aggregate\IAggregate.cs" />
     <Compile Include="Aggregate\IEventSourced.cs" />
-    <Compile Include="Event\EventEnvelope.cs" />
+    <Compile Include="Serialization\CommandEnvelope.cs" />
+    <Compile Include="Serialization\EventEnvelope.cs" />
     <Compile Include="EventHandlerBase.cs" />
     <Compile Include="EventHandlerCollection.cs" />
     <Compile Include="EventHandlerResult.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="ICommandSender.cs" />
     <Compile Include="IEventHandler.cs" />
     <Compile Include="IEventMappingRegistry.cs" />
+    <Compile Include="ISaga.cs" />
     <Compile Include="PoorMansEventHandlerRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Registration\EventMapping.cs" />

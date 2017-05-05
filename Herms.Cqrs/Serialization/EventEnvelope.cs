@@ -1,6 +1,7 @@
 ﻿using System;
+using Herms.Cqrs.Event;
 
-namespace Herms.Cqrs.Event
+namespace Herms.Cqrs.Serialization
 {
     [Serializable]
     public class EventEnvelope

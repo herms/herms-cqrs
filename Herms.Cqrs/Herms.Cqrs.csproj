@@ -63,9 +63,9 @@
     <Compile Include="Aggregate\IEventSourced.cs" />
     <Compile Include="CommandStatus.cs" />
     <Compile Include="IInfrastructureRepository.cs" />
-    <Compile Include="SagaBase.cs" />
-    <Compile Include="SagaConsistencyException.cs" />
-    <Compile Include="SagaException.cs" />
+    <Compile Include="Saga\SagaBase.cs" />
+    <Compile Include="Saga\Exceptions\SagaConsistencyException.cs" />
+    <Compile Include="Saga\Exceptions\SagaException.cs" />
     <Compile Include="Serialization\CommandEnvelope.cs" />
     <Compile Include="Serialization\CommandEnvelopeSerilizer.cs" />
     <Compile Include="Serialization\EventEnvelope.cs" />
@@ -88,7 +88,7 @@
     <Compile Include="ICommandSender.cs" />
     <Compile Include="IEventHandler.cs" />
     <Compile Include="IEventMappingRegistry.cs" />
-    <Compile Include="ISaga.cs" />
+    <Compile Include="Saga\ISaga.cs" />
     <Compile Include="PoorMansEventHandlerRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Registration\EventMapping.cs" />

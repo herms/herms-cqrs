@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Herms.Cqrs
+namespace Herms.Cqrs.Saga.Exceptions
 {
     public class SagaException : Exception
     {

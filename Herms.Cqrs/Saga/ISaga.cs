@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Herms.Cqrs
+namespace Herms.Cqrs.Saga
 {
     public interface ISaga
     {
         Guid Id { get; }
         IEnumerable<Command> GetCommands();
-        Task Proceed();
+        Task ProceedAsync();
     }
 }

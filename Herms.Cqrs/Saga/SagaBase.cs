@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.Logging;
+using Herms.Cqrs.Saga.Exceptions;
 
-namespace Herms.Cqrs
+namespace Herms.Cqrs.Saga
 {
     public class SagaBase
     {
-        private IInfrastructureRepository _infrastructureRepository;
+        private readonly IInfrastructureRepository _infrastructureRepository;
 
         public SagaBase(IInfrastructureRepository infrastructureRepository)
         {
@@ -21,7 +21,7 @@ namespace Herms.Cqrs
                 if (command.Status == CommandStatus.Failed)
                     throw new SagaException("This saga has a failed command.");
                 if (command.Status == CommandStatus.Dispatched)
-                    throw new SagaException("This saga is currently being processesd. Try again later.");
+                    throw new SagaException("This saga is currently being processed.");
                 if (command.Status == CommandStatus.Processed)
                     continue;
                 if (command.Status == CommandStatus.Received)
@@ -51,7 +51,6 @@ namespace Herms.Cqrs
                 log.Error($"Failed to handle {command.GetType().Name} {command.CommandId} for {this.GetType().Name} {saga.Id}", exception);
             }
         }
-
 
     }
 }

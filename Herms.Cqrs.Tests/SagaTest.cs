@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Herms.Cqrs.Saga.Exceptions;
 using Herms.Cqrs.TestContext;
 using Herms.Cqrs.TestContext.Commands;
 using Moq;
@@ -21,7 +22,7 @@ namespace Herms.Cqrs.Tests
             saga.TestCommand3 = new TestCommand3();
             Command.Correlate(saga.TestCommand1, saga.TestCommand3);
 
-            await Assert.ThrowsAsync<SagaConsistencyException>(() => saga.Proceed());
+            await Assert.ThrowsAsync<SagaConsistencyException>(() => saga.ProceedAsync());
         }
 
         [Fact]
@@ -38,7 +39,7 @@ namespace Herms.Cqrs.Tests
             Command.Correlate(saga.TestCommand1, saga.TestCommand2, saga.TestCommand3);
             saga.TestCommand1.Status = CommandStatus.Failed;
 
-            await Assert.ThrowsAsync<SagaException>(() => saga.Proceed());
+            await Assert.ThrowsAsync<SagaException>(() => saga.ProceedAsync());
         }
     }
 }

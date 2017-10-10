@@ -68,7 +68,7 @@ namespace Herms.Cqrs.TestContext
             if (this.GetCommands().Any(c => c.Status == CommandStatus.Failed))
                 throw new SagaException("This saga has a failed command.");
             if (this.GetCommands().Any(c => c.Status == CommandStatus.Dispatched))
-                throw new SagaException("This saga is currently being processesd. Try again later.");
+                throw new SagaException("This saga is currently being processed.");
 
             var nextCommand = this.GetNextCommand(this);
 

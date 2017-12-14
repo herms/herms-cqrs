@@ -38,6 +38,11 @@ namespace Herms.Cqrs
 
         private static void CorrelateInternal(IEnumerable<Command> commands)
         {
+            if (commands == null)
+            {
+                throw new ArgumentNullException("commands");
+            }
+            
             var correlationId = Guid.NewGuid();
             foreach (var command in commands)
             {

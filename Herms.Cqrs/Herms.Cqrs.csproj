@@ -63,6 +63,7 @@
     <Compile Include="Aggregate\IEventSourced.cs" />
     <Compile Include="CommandStatus.cs" />
     <Compile Include="IInfrastructureRepository.cs" />
+    <Compile Include="PoorMansCommandHandlerRegistry.cs" />
     <Compile Include="Saga\SagaBase.cs" />
     <Compile Include="Saga\Exceptions\SagaConsistencyException.cs" />
     <Compile Include="Saga\Exceptions\SagaException.cs" />

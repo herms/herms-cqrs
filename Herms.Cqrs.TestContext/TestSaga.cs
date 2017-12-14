@@ -9,7 +9,7 @@ using Herms.Cqrs.TestContext.Commands;
 
 namespace Herms.Cqrs.TestContext
 {
-    public class TestSaga : SagaBase, ISaga
+    public class TestSaga : SagaBase
     {
         private readonly ICommandHandlerRegistry _commandHandlerRegistry;
         private readonly ILog _log;
@@ -17,8 +17,7 @@ namespace Herms.Cqrs.TestContext
         private TestCommand2 _testCommand2;
         private TestCommand3 _testCommand3;
 
-        public TestSaga(Guid id, ICommandHandlerRegistry commandHandlerRegistry, IInfrastructureRepository infrastructureRepository) : base(
-            infrastructureRepository)
+        public TestSaga(Guid id, ICommandHandlerRegistry commandHandlerRegistry, IInfrastructureRepository infrastructureRepository) : base(infrastructureRepository, commandHandlerRegistry)
         {
             _commandHandlerRegistry = commandHandlerRegistry;
             Id = id;
@@ -55,30 +54,11 @@ namespace Herms.Cqrs.TestContext
             }
         }
 
-        public Guid Id { get; }
+        public override Guid Id { get; }
 
-        public IEnumerable<Command> GetCommands()
+        public override IEnumerable<Command> GetCommands()
         {
             return new List<Command> { TestCommand1, TestCommand2, TestCommand3 };
-        }
-
-        public async Task ProceedAsync()
-        {
-            this.Validate();
-            if (this.GetCommands().Any(c => c.Status == CommandStatus.Failed))
-                throw new SagaException("This saga has a failed command.");
-            if (this.GetCommands().Any(c => c.Status == CommandStatus.Dispatched))
-                throw new SagaException("This saga is currently being processed.");
-
-            var nextCommand = this.GetNextCommand(this);
-
-            Task handleCommandTask = null;
-            if (TestCommand1 == nextCommand)
-            {
-                var commandHandler = _commandHandlerRegistry.ResolveHandler(TestCommand1);
-                handleCommandTask = commandHandler.HandleAsync(TestCommand1);
-            }
-            await this.HandleCommand(this, TestCommand1, handleCommandTask, _log);
         }
 
         private void Validate()

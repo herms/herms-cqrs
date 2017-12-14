@@ -11,7 +11,7 @@ namespace Herms.Cqrs.Azure.Tests
     public class AzureStorageQueueTest
     {
         [Fact]
-        public async Task GivenTheWorld_WhenSendingMessageToQueue_ThenMessageShouldBeReceived()
+        public async Task GivenSomeMessage_WhenSendingMessageToQueue_ThenMessageShouldBeReceived()
         {
             var storageConnectionString = ConfigurationManager.AppSettings["StorageConnectionString"];
             var eventHandlerRegistry = new PoorMansEventHandlerRegistry();

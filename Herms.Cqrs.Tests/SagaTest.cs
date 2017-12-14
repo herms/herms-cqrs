@@ -15,12 +15,20 @@ namespace Herms.Cqrs.Tests
         {
             var infrastructureRepositoryMock = new Mock<IInfrastructureRepository>();
             var commandHandlerRegistryMock = new Mock<ICommandHandlerRegistry>();
+            var dummyHandler = new Mock<ICommandHandler<Command>>();
+
+            commandHandlerRegistryMock.Setup(ch => ch.ResolveHandler(It.Is<Command>(t => t.GetType() == typeof(TestCommand1))))
+                .Returns(dummyHandler.Object);
+            commandHandlerRegistryMock.Setup(ch => ch.ResolveHandler(It.Is<Command>(t => t.GetType() == typeof(TestCommand2))))
+                .Returns(dummyHandler.Object);
+            commandHandlerRegistryMock.Setup(ch => ch.ResolveHandler(It.Is<Command>(t => t.GetType() == typeof(TestCommand3))))
+                .Returns(dummyHandler.Object);
 
             var correlationId = Guid.NewGuid();
             var saga = new TestSaga(correlationId, commandHandlerRegistryMock.Object, infrastructureRepositoryMock.Object);
-            saga.TestCommand1 = new TestCommand1();
+            saga.TestCommand1 = new TestCommand1 { Status = CommandStatus.Processed };
             saga.TestCommand3 = new TestCommand3();
-            Command.Correlate(saga.TestCommand1, saga.TestCommand3);
+            //Command.Correlate(saga.TestCommand1, saga.TestCommand3);
 
             await Assert.ThrowsAsync<SagaConsistencyException>(() => saga.ProceedAsync());
         }

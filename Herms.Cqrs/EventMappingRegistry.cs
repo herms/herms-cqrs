@@ -39,4 +39,39 @@ namespace Herms.Cqrs
             return _eventTypeToName[type];
         }
     }
+    public class TypeMappingRegistry : ITypeMappingRegistry
+    {
+        private readonly Dictionary<string, Type> _nameToType;
+        private readonly Dictionary<Type, string> _typeToName;
+
+        public TypeMappingRegistry()
+        {
+            _typeToName = new Dictionary<Type, string>();
+            _nameToType = new Dictionary<string, Type>();
+        }
+
+        public void Register(TypeMapping commandMapping)
+        {
+            _nameToType.Add(commandMapping.TypeName, commandMapping.Type);
+            _typeToName.Add(commandMapping.Type, commandMapping.TypeName);
+        }
+
+        public void Register(IEnumerable<TypeMapping> typeMappings)
+        {
+            foreach (var typeMapping in typeMappings)
+            {
+                this.Register(typeMapping);
+            }
+        }
+
+        public Type ResolveType(string name)
+        {
+            return _nameToType[name];
+        }
+
+        public string ResolveName(Type type)
+        {
+            return _typeToName[type];
+        }
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
 using Herms.Cqrs.Registration;
@@ -9,6 +10,36 @@ using Xunit;
 
 namespace Herms.Cqrs.Azure.Tests
 {
+    public class AzureCommandRepositoryTest
+    {
+        private string _connectionString;
+
+        public AzureCommandRepositoryTest()
+        {
+            _connectionString = ConfigurationManager.AppSettings["StorageConnectionString"];
+        }
+
+        [Fact]
+        public async Task GivenTestCommand_WhenSerializing_AndDeserializing_ThenCommandShouldBeEqual()
+        {
+            var testCommand = new TestCommand2();
+
+            var typeMappingRegistry = new TypeMappingRegistry();
+            typeMappingRegistry.Register(new TypeMapping{TypeName = "TestCommand2", Type = typeof(TestCommand2)});
+
+            var sut = new AzureTableStorageCommandRepository(_connectionString, "commands", typeMappingRegistry, true);
+
+            testCommand.Param1 = "Test";
+
+            await sut.SaveCommandAsync(testCommand);
+
+            var deserializedCommand = (TestCommand2)sut.GetCommand(testCommand.CommandId);
+
+            Assert.Equal(testCommand.Param1, deserializedCommand.Param1);
+            Assert.Equal(testCommand.CommandId, deserializedCommand.CommandId);
+        }
+    }
+
     public class AzureEventRepositoryTests
     {
         private readonly AzureEventRepository<TestAggregate> _sut;

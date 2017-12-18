@@ -220,7 +220,9 @@ namespace Herms.Cqrs.Scanning
         AllHandlers = 3,
         //0000100
         Events = 4,
-        //0000111
-        All = 7
+        //0000100
+        Commands = 8,
+        //0001111
+        All = 15
     }
 }

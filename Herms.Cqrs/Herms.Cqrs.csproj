@@ -63,6 +63,7 @@
     <Compile Include="Aggregate\IEventSourced.cs" />
     <Compile Include="CommandStatus.cs" />
     <Compile Include="IInfrastructureRepository.cs" />
+    <Compile Include="ITypeMappingRegistry.cs" />
     <Compile Include="PoorMansCommandHandlerRegistry.cs" />
     <Compile Include="Saga\SagaBase.cs" />
     <Compile Include="Saga\Exceptions\SagaConsistencyException.cs" />
@@ -86,7 +87,6 @@
     <Compile Include="Event\VersionedEvent.cs" />
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="ICommandHandlerRegistry.cs" />
-    <Compile Include="ICommandSender.cs" />
     <Compile Include="IEventHandler.cs" />
     <Compile Include="IEventMappingRegistry.cs" />
     <Compile Include="Saga\ISaga.cs" />

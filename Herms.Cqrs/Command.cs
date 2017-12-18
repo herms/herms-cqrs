@@ -22,6 +22,7 @@ namespace Herms.Cqrs
         public Guid CommandId { get; }
         public Guid? CorrelationId { get; set; }
         public Guid AggregateId { get; }
+        public Guid Issuer { get; set; }
         public DateTime? Dispatched { get; set; }
         public DateTime? Processed { get; set; }
         public CommandStatus Status { get; set; }

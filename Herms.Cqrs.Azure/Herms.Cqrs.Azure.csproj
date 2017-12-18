@@ -73,8 +73,10 @@
     <Compile Include="AzureStorageQueueConfiguration.cs" />
     <Compile Include="AzureStorageQueueDispatcher.cs" />
     <Compile Include="AzureStorageQueueReceiver.cs" />
+    <Compile Include="AzureTableStorageCommandRepository.cs" />
     <Compile Include="AzureTableStorageEventRepository.cs" />
     <Compile Include="CloudQueueMessageSerializer.cs" />
+    <Compile Include="EventEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

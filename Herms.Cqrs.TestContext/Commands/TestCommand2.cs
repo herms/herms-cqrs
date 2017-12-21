@@ -1,9 +1,10 @@
 ﻿using System;
 using Common.Logging;
+using Herms.Cqrs.Commands;
 
 namespace Herms.Cqrs.TestContext.Commands
 {
-    public class TestCommand2 : Command
+    public class TestCommand2 : CommandBase
     {
         private ILog _log;
         public TestCommand2() : base(Guid.NewGuid())

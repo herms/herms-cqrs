@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common.Logging;
+using Herms.Cqrs.Commands;
 using Herms.Cqrs.Registration;
 using Ninject;
 
@@ -27,7 +28,7 @@ namespace Herms.Cqrs.Ninject
                 throw new ArgumentException(errorMsg);
             }
             var genericArguments = handlerType.GetGenericArguments();
-            if (genericArguments.Length != 1 || !typeof (Command).IsAssignableFrom(genericArguments[0]))
+            if (genericArguments.Length != 1 || !typeof (CommandBase).IsAssignableFrom(genericArguments[0]))
             {
                 var errorMsg = $"{implementationType.Name} contains a command handler which does not comply with signature.";
                 _log.Warn(errorMsg);
@@ -54,7 +55,7 @@ namespace Herms.Cqrs.Ninject
             }
         }
 
-        public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : Command
+        public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : CommandBase
         {
             return (ICommandHandler<T>) _kernel.Get(typeof (ICommandHandler<T>));
         }

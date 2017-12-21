@@ -61,7 +61,8 @@
     <Compile Include="Aggregate\Exceptions\AggregateModelException.cs" />
     <Compile Include="Aggregate\IAggregate.cs" />
     <Compile Include="Aggregate\IEventSourced.cs" />
-    <Compile Include="CommandStatus.cs" />
+    <Compile Include="Commands\CommandLogItem.cs" />
+    <Compile Include="Commands\CommandStatus.cs" />
     <Compile Include="ICommandRepository.cs" />
     <Compile Include="ICommandLogRepository.cs" />
     <Compile Include="ITypeMappingRegistry.cs" />
@@ -83,7 +84,7 @@
     <Compile Include="IAggregateRepository.cs" />
     <Compile Include="IEventDispatcher.cs" />
     <Compile Include="IEventHandlerRegistry.cs" />
-    <Compile Include="Command.cs" />
+    <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Event\IEvent.cs" />
     <Compile Include="Event\VersionedEvent.cs" />
     <Compile Include="ICommandHandler.cs" />

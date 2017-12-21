@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Herms.Cqrs
+﻿namespace Herms.Cqrs.Commands
 {
     public enum CommandStatus
     {

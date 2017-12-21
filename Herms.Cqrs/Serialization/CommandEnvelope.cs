@@ -1,4 +1,5 @@
 ﻿using System;
+using Herms.Cqrs.Commands;
 
 namespace Herms.Cqrs.Serialization
 {
@@ -10,6 +11,6 @@ namespace Herms.Cqrs.Serialization
         public const string CommandTypeField = "CommandType";
         public string AssemblyName { get; set; }
         public string CommandType { get; set; }
-        public Command CommandData { get; set; }
+        public CommandBase CommandData { get; set; }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Herms.Cqrs
+namespace Herms.Cqrs.Commands
 {
-    public class Command
+    public class CommandBase
     {
-        public Command()
+        public CommandBase()
         {
             
         }
@@ -15,13 +15,13 @@ namespace Herms.Cqrs
             CommandId = Guid.NewGuid();
         }
 
-        public Command(Guid aggregateId)
+        public CommandBase(Guid aggregateId)
         {
             AggregateId = aggregateId;
             this.GenerateCommandId();
         }
 
-        protected Command(Guid aggregateId, Guid commandId, Guid? correlationId = null)
+        protected CommandBase(Guid aggregateId, Guid commandId, Guid? correlationId = null)
         {
             AggregateId = aggregateId;
             CommandId = commandId;
@@ -37,17 +37,17 @@ namespace Herms.Cqrs
         public DateTime? Processed { get; set; }
         public CommandStatus Status { get; set; }
 
-        public static void Correlate(IEnumerable<Command> commands)
+        public static void Correlate(IEnumerable<CommandBase> commands)
         {
             CorrelateInternal(commands);
         }
 
-        public static void Correlate(params Command[] commands)
+        public static void Correlate(params CommandBase[] commands)
         {
             CorrelateInternal(commands);
         }
 
-        private static void CorrelateInternal(IEnumerable<Command> commands)
+        private static void CorrelateInternal(IEnumerable<CommandBase> commands)
         {
             if (commands == null)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common.Logging;
+using Herms.Cqrs.Commands;
 using Herms.Cqrs.Saga;
 using Herms.Cqrs.Saga.Exceptions;
 using Herms.Cqrs.TestContext.Commands;
@@ -53,9 +54,9 @@ namespace Herms.Cqrs.TestContext
 
         public override Guid Id { get; }
 
-        public override IEnumerable<Command> GetCommands()
+        public override IEnumerable<CommandBase> GetCommands()
         {
-            return new List<Command> { TestCommand1, TestCommand2, TestCommand3 };
+            return new List<CommandBase> { TestCommand1, TestCommand2, TestCommand3 };
         }
 
         private void Validate()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.Logging;
+using Herms.Cqrs.Commands;
 using Herms.Cqrs.Saga.Exceptions;
 
 namespace Herms.Cqrs.Saga
@@ -20,7 +21,7 @@ namespace Herms.Cqrs.Saga
         }
 
         public abstract Guid Id { get; }
-        public abstract IEnumerable<Command> GetCommands();
+        public abstract IEnumerable<CommandBase> GetCommands();
 
         public async Task ProceedAsync()
         {
@@ -31,7 +32,7 @@ namespace Herms.Cqrs.Saga
             await this.HandleCommand(this, nextCommand, handleCommandTask);
         }
 
-        public Command GetNextCommand()
+        public CommandBase GetNextCommand()
         {
             foreach (var command in this.GetCommands())
             {
@@ -51,7 +52,7 @@ namespace Herms.Cqrs.Saga
             throw new SagaException($"{this.GetType().Name} {Id} was not able to find the next unprocessed command.");
         }
 
-        protected async Task HandleCommand(ISaga saga, Command command, Task handleCommandTask)
+        protected async Task HandleCommand(ISaga saga, CommandBase command, Task handleCommandTask)
         {
             command.Status = CommandStatus.Dispatched;
             var updateCommandStatusTask = _commandLogRepository.UpdateCommandStatusAsync(command);

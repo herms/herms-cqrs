@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Herms.Cqrs.Commands;
 
 namespace Herms.Cqrs
 {
     public interface ICommandLogRepository
     {
-        Task UpdateCommandStatusAsync(Command command);
-        List<Tuple<DateTime, CommandStatus>> GetCommandHistory(Guid commandId);
+        Task UpdateCommandStatusAsync(CommandBase command);
+        List<CommandLogItem> GetCommandHistory(Guid commandId);
     }
 }

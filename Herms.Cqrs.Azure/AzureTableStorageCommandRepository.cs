@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Common.Logging;
+using Herms.Cqrs.Commands;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
@@ -29,7 +30,7 @@ namespace Herms.Cqrs.Azure
             _storageAccount = CloudStorageAccount.Parse(connectionString);
         }
 
-        public async Task SaveCommandAsync(Command command)
+        public async Task SaveCommandAsync(CommandBase command)
         {
             await this.Initialize();
             var commandName = GetCommandName(command);
@@ -54,7 +55,7 @@ namespace Herms.Cqrs.Azure
             }
         }
 
-        public Command GetCommand(Guid id)
+        public CommandBase GetCommand(Guid id)
         {
             var task = this.Initialize();
             task.Wait();
@@ -74,12 +75,12 @@ namespace Herms.Cqrs.Azure
             }
             var commandEntity = commandEntities.First();
             var typeFromEntity = this.GetTypeFromEntity(commandEntity);
-            var command = (Command) JsonConvert.DeserializeObject(commandEntity.Payload, typeFromEntity);
+            var command = (CommandBase) JsonConvert.DeserializeObject(commandEntity.Payload, typeFromEntity);
             _log.Info($"Deserialized {command.GetType().Name} command...");
             return command;
         }
 
-        public Command[] GetCorrelatedCommands(Guid id)
+        public CommandBase[] GetCorrelatedCommands(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -104,7 +105,7 @@ namespace Herms.Cqrs.Azure
             return r.HttpStatusCode < 200 || r.HttpStatusCode >= 300;
         }
 
-        private string GetCommandName(Command command)
+        private string GetCommandName(CommandBase command)
         {
             var commandMapping = _commandMappingRegistry.ResolveName(command.GetType());
             if (commandMapping != null)

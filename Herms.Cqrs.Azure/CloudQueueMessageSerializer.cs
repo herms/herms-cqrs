@@ -1,5 +1,6 @@
 ﻿using System;
 using Common.Logging;
+using Herms.Cqrs.Commands;
 using Herms.Cqrs.Event;
 using Herms.Cqrs.Serialization;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -21,7 +22,7 @@ namespace Herms.Cqrs.Azure
             return EventEnvelopeSerializer.DeserializeEvent(contents);
         }
 
-        public Command DeserializeMessageToCommand(CloudQueueMessage message)
+        public CommandBase DeserializeMessageToCommand(CloudQueueMessage message)
         {
             var contents = message.AsString;
             return CommandEnvelopeSerilizer.DeserializeCommand(contents);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common.Logging;
+using Herms.Cqrs.Commands;
 using Herms.Cqrs.Registration;
 
 namespace Herms.Cqrs {
@@ -17,7 +18,7 @@ namespace Herms.Cqrs {
                 throw new ArgumentException(errorMsg);
             }
             var genericArguments = handlerType.GetGenericArguments();
-            if (genericArguments.Length != 1 || !typeof(Command).IsAssignableFrom(genericArguments[0]))
+            if (genericArguments.Length != 1 || !typeof(CommandBase).IsAssignableFrom(genericArguments[0]))
             {
                 var errorMsg = $"{implementationType.Name} contains a command handler which does not comply with signature.";
                 _log.Warn(errorMsg);
@@ -41,7 +42,7 @@ namespace Herms.Cqrs {
                 this.Register(handlerDefinition.Handler, handlerDefinition.Implementation);
             }
         }
-        public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : Command
+        public ICommandHandler<T> ResolveHandler<T>(T commandType) where T : CommandBase
         {
             return null;
         }

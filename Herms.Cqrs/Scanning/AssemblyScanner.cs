@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Common.Logging;
+using Herms.Cqrs.Commands;
 using Herms.Cqrs.Event;
 using Herms.Cqrs.Registration;
 
@@ -172,8 +173,8 @@ namespace Herms.Cqrs.Scanning
                         if (arguments.Length != 1 || arguments[0] == null)
                             throw new ArgumentException($"Generic argument was not found for handler {commandHandler.FullName}.");
                         var argument = arguments[0];
-                        if (!typeof(Command).IsAssignableFrom(argument))
-                            throw new ArgumentException($"Generic argument is not assignable from type {typeof(Command).FullName}.");
+                        if (!typeof(CommandBase).IsAssignableFrom(argument))
+                            throw new ArgumentException($"Generic argument is not assignable from type {typeof(CommandBase).FullName}.");
                         var handlerDefinition = new HandlerDefinition
                         {
                             Handler = commandHandler,

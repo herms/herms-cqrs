@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Herms.Cqrs.Commands;
 using Herms.Cqrs.Saga.Exceptions;
 using Herms.Cqrs.TestContext;
 using Herms.Cqrs.TestContext.Commands;
@@ -15,13 +16,13 @@ namespace Herms.Cqrs.Tests
         {
             var commandLogRepositoryMock = new Mock<ICommandLogRepository>();
             var commandHandlerRegistryMock = new Mock<ICommandHandlerRegistry>();
-            var dummyHandler = new Mock<ICommandHandler<Command>>();
+            var dummyHandler = new Mock<ICommandHandler<CommandBase>>();
 
-            commandHandlerRegistryMock.Setup(ch => ch.ResolveHandler(It.Is<Command>(t => t.GetType() == typeof(TestCommand1))))
+            commandHandlerRegistryMock.Setup(ch => ch.ResolveHandler(It.Is<CommandBase>(t => t.GetType() == typeof(TestCommand1))))
                 .Returns(dummyHandler.Object);
-            commandHandlerRegistryMock.Setup(ch => ch.ResolveHandler(It.Is<Command>(t => t.GetType() == typeof(TestCommand2))))
+            commandHandlerRegistryMock.Setup(ch => ch.ResolveHandler(It.Is<CommandBase>(t => t.GetType() == typeof(TestCommand2))))
                 .Returns(dummyHandler.Object);
-            commandHandlerRegistryMock.Setup(ch => ch.ResolveHandler(It.Is<Command>(t => t.GetType() == typeof(TestCommand3))))
+            commandHandlerRegistryMock.Setup(ch => ch.ResolveHandler(It.Is<CommandBase>(t => t.GetType() == typeof(TestCommand3))))
                 .Returns(dummyHandler.Object);
 
             var correlationId = Guid.NewGuid();
@@ -44,7 +45,7 @@ namespace Herms.Cqrs.Tests
             saga.TestCommand1 = new TestCommand1();
             saga.TestCommand2 = new TestCommand2();
             saga.TestCommand3 = new TestCommand3();
-            Command.Correlate(saga.TestCommand1, saga.TestCommand2, saga.TestCommand3);
+            CommandBase.Correlate(saga.TestCommand1, saga.TestCommand2, saga.TestCommand3);
             saga.TestCommand1.Status = CommandStatus.Failed;
 
             await Assert.ThrowsAsync<SagaException>(() => saga.ProceedAsync());

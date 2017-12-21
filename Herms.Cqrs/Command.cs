@@ -5,10 +5,20 @@ namespace Herms.Cqrs
 {
     public class Command
     {
+        public Command()
+        {
+            
+        }
+
+        protected void GenerateCommandId()
+        {
+            CommandId = Guid.NewGuid();
+        }
+
         public Command(Guid aggregateId)
         {
             AggregateId = aggregateId;
-            CommandId = Guid.NewGuid();
+            this.GenerateCommandId();
         }
 
         protected Command(Guid aggregateId, Guid commandId, Guid? correlationId = null)
@@ -19,9 +29,9 @@ namespace Herms.Cqrs
             Status = CommandStatus.Received;
         }
 
-        public Guid CommandId { get; }
+        public Guid CommandId { get; set; }
         public Guid? CorrelationId { get; set; }
-        public Guid AggregateId { get; }
+        public Guid AggregateId { get; set; }
         public Guid Issuer { get; set; }
         public DateTime? Dispatched { get; set; }
         public DateTime? Processed { get; set; }

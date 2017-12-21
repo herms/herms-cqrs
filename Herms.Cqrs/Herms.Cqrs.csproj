@@ -62,7 +62,8 @@
     <Compile Include="Aggregate\IAggregate.cs" />
     <Compile Include="Aggregate\IEventSourced.cs" />
     <Compile Include="CommandStatus.cs" />
-    <Compile Include="IInfrastructureRepository.cs" />
+    <Compile Include="ICommandRepository.cs" />
+    <Compile Include="ICommandLogRepository.cs" />
     <Compile Include="ITypeMappingRegistry.cs" />
     <Compile Include="PoorMansCommandHandlerRegistry.cs" />
     <Compile Include="Saga\SagaBase.cs" />

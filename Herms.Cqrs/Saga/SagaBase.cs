@@ -9,12 +9,12 @@ namespace Herms.Cqrs.Saga
     public abstract class SagaBase : ISaga
     {
         private readonly ICommandHandlerRegistry _commandHandlerRegistry;
-        private readonly IInfrastructureRepository _infrastructureRepository;
+        private readonly ICommandLogRepository _commandLogRepository;
         private readonly ILog _log;
 
-        public SagaBase(IInfrastructureRepository infrastructureRepository, ICommandHandlerRegistry commandHandlerRegistry, ILog log = null)
+        public SagaBase(ICommandLogRepository commandLogRepository, ICommandHandlerRegistry commandHandlerRegistry, ILog log = null)
         {
-            _infrastructureRepository = infrastructureRepository;
+            _commandLogRepository = commandLogRepository;
             _commandHandlerRegistry = commandHandlerRegistry;
             _log = log ?? LogManager.GetLogger(this.GetType());
         }
@@ -54,12 +54,12 @@ namespace Herms.Cqrs.Saga
         protected async Task HandleCommand(ISaga saga, Command command, Task handleCommandTask)
         {
             command.Status = CommandStatus.Dispatched;
-            var updateCommandStatusTask = _infrastructureRepository.UpdateCommandStatusAsync(command);
+            var updateCommandStatusTask = _commandLogRepository.UpdateCommandStatusAsync(command);
             try
             {
                 await Task.WhenAll(updateCommandStatusTask, handleCommandTask);
                 command.Status = CommandStatus.Processed;
-                await _infrastructureRepository.UpdateCommandStatusAsync(command);
+                await _commandLogRepository.UpdateCommandStatusAsync(command);
             }
             catch (Exception exception)
             {

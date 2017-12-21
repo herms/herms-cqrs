@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Common.Logging;
 using Herms.Cqrs.Saga;
 using Herms.Cqrs.Saga.Exceptions;
@@ -11,15 +9,14 @@ namespace Herms.Cqrs.TestContext
 {
     public class TestSaga : SagaBase
     {
-        private readonly ICommandHandlerRegistry _commandHandlerRegistry;
         private readonly ILog _log;
         private TestCommand1 _testCommand1;
         private TestCommand2 _testCommand2;
         private TestCommand3 _testCommand3;
 
-        public TestSaga(Guid id, ICommandHandlerRegistry commandHandlerRegistry, IInfrastructureRepository infrastructureRepository) : base(infrastructureRepository, commandHandlerRegistry)
+        public TestSaga(Guid id, ICommandHandlerRegistry commandHandlerRegistry, ICommandLogRepository commandLogRepository) : base(
+            commandLogRepository, commandHandlerRegistry)
         {
-            _commandHandlerRegistry = commandHandlerRegistry;
             Id = id;
             _log = LogManager.GetLogger(this.GetType());
         }

@@ -67,6 +67,7 @@
     <Compile Include="ICommandLogRepository.cs" />
     <Compile Include="ITypeMappingRegistry.cs" />
     <Compile Include="PoorMansCommandHandlerRegistry.cs" />
+    <Compile Include="Saga\ISagaTriggerDispatcher.cs" />
     <Compile Include="Saga\SagaBase.cs" />
     <Compile Include="Saga\Exceptions\SagaConsistencyException.cs" />
     <Compile Include="Saga\Exceptions\SagaException.cs" />

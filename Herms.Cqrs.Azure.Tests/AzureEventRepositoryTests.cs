@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using Common.Logging;
 using Herms.Cqrs.Registration;
 using Herms.Cqrs.TestContext.Commands;
 using Herms.Cqrs.TestContext.Events;
@@ -13,10 +15,12 @@ namespace Herms.Cqrs.Azure.Tests
     public class AzureCommandRepositoryTest
     {
         private string _connectionString;
+        private ILog _log;
 
         public AzureCommandRepositoryTest()
         {
             _connectionString = ConfigurationManager.AppSettings["StorageConnectionString"];
+            _log = LogManager.GetLogger(this.GetType());
         }
 
         [Fact]
@@ -43,6 +47,7 @@ namespace Herms.Cqrs.Azure.Tests
     public class AzureEventRepositoryTests
     {
         private readonly AzureEventRepository<TestAggregate> _sut;
+        private ILog _log;
 
         public AzureEventRepositoryTests()
         {
@@ -52,6 +57,7 @@ namespace Herms.Cqrs.Azure.Tests
             eventMappingRegistry.Register(new EventMapping {EventName = typeof(TestEvent2).FullName, EventType = typeof(TestEvent2)});
             eventMappingRegistry.Register(new EventMapping {EventName = typeof(TestEvent3).FullName, EventType = typeof(TestEvent3)});
             _sut = new AzureEventRepository<TestAggregate>(connectionString, typeof(TestAggregate).Name, eventMappingRegistry, true);
+            _log = LogManager.GetLogger(this.GetType());
         }
 
         [Fact]
@@ -63,9 +69,20 @@ namespace Herms.Cqrs.Azure.Tests
 
             await _sut.SaveAsync(aggregate);
 
-            await Task.Delay(50);
-
-            var loadedAggregate = _sut.Get(aggregate.Id);
+            TestAggregate loadedAggregate = null;
+            var attempt = 0;
+            while (attempt < 10)
+            {
+                _log.Debug($"Attempt [{attempt+1}/10] to load aggregate.");
+                loadedAggregate = _sut.Get(aggregate.Id);
+                if (loadedAggregate != null)
+                {
+                    _log.Debug("Got aggregate.");
+                    break;
+                }
+                await Task.Delay(50);
+                attempt++;
+            }
 
             Assert.NotNull(loadedAggregate);
             Assert.Equal(aggregate.Id, loadedAggregate.Id);

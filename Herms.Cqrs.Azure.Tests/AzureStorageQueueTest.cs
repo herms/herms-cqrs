@@ -31,7 +31,7 @@ namespace Herms.Cqrs.Azure.Tests
 
             var queueReceiver = new AzureStorageQueueReceiver(queueConfiguration, eventHandlerRegistry);
 
-            var queueDispatcher = new AzureStorageQueueDispatcher(queueConfiguration);
+            var queueDispatcher = new AzureStorageQueueEventDispatcher(queueConfiguration);
 
             queueReceiver.Start();
 

@@ -72,7 +72,9 @@
     <Compile Include="AzureEventRepository.cs" />
     <Compile Include="AzureStorageQueueConfiguration.cs" />
     <Compile Include="AzureStorageQueueDispatcher.cs" />
+    <Compile Include="AzureStorageQueueEventDispatcher.cs" />
     <Compile Include="AzureStorageQueueReceiver.cs" />
+    <Compile Include="AzureStorageQueueSagaTriggerDispatcher.cs" />
     <Compile Include="AzureTableStorageCommandRepository.cs" />
     <Compile Include="AzureTableStorageEventRepository.cs" />
     <Compile Include="CloudQueueMessageSerializer.cs" />

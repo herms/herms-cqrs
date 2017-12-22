@@ -9,5 +9,6 @@ namespace Herms.Cqrs
     {
         Task UpdateCommandStatusAsync(CommandBase command);
         List<CommandLogItem> GetCommandHistory(Guid commandId);
+        Dictionary<Guid, List<CommandLogItem>> GetCommandHistory(Guid[] commandId);
     }
 }
